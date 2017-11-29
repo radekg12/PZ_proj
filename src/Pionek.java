@@ -83,7 +83,7 @@ public class Pionek {
     }
 
     public void setHeight(int height) {
-        this.height = height;
+        Pionek.height = height;
     }
 
     public int getWidth() {
@@ -91,7 +91,7 @@ public class Pionek {
     }
 
     public void setWidth(int width) {
-        this.width = width;
+        Pionek.width = width;
     }
 
     public int getK() {
@@ -124,6 +124,7 @@ public class Pionek {
 
     public void setMozeBic(boolean mozeBic) {
         this.mozeBic = mozeBic;
+        this.maRuch = mozeBic;
     }
 
     public static Color getCiemny() {
@@ -191,5 +192,13 @@ public class Pionek {
 
     public static void setKorona(BufferedImage korona) {
         Pionek.korona = korona;
+    }
+
+    public static Color getKolorBicia() {
+        return kolorBicia;
+    }
+
+    public static void setKolorBicia(Color kolorBicia) {
+        Pionek.kolorBicia = kolorBicia;
     }
 }

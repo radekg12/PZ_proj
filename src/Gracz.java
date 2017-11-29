@@ -29,11 +29,11 @@ public class Gracz {
         this.pionki = pionki;
     }
 
-    public void dodajPionek(Pionek pionek){
+    public void dodajPionek(Pionek pionek) {
         pionki.add(pionek);
     }
 
-    public void usunPionek(Pionek pionek){
+    public void usunPionek(Pionek pionek) {
         pionki.remove(pionek);
     }
 

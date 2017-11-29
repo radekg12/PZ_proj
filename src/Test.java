@@ -1,5 +1,3 @@
-import com.sun.tools.javac.util.Iterators;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -7,7 +5,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.ArrayList;
 
 public class Test extends JPanel {
     private int height;
@@ -16,9 +14,11 @@ public class Test extends JPanel {
     private Pionek[][] pionkiTab;
     private Pole[][] plansza;
     private Pionek aktywny;
-    private int kolej;
     private BufferedImage icon;
     private Gracz gracz1, gracz2;
+    private Gracz aktualnyGracz;
+    private Gracz aktualnyPrzeciwnik;
+    private boolean start;
 
 
     private Test(int width, int height, int liczbaPol) {
@@ -33,15 +33,15 @@ public class Test extends JPanel {
         pionkiTab = new Pionek[liczbaPol][liczbaPol];
         plansza = new Pole[liczbaPol][liczbaPol];
         addMouseListener(new Ruchy());
-        kolej = 1;
-        gracz1 = new Gracz("gracz1", -1);
-        gracz2 = new Gracz("gracz2", 1);
+        aktualnyPrzeciwnik = gracz1 = new Gracz("gracz1", -1);
+        aktualnyGracz = gracz2 = new Gracz("gracz2", 1);
         ustawPionki();
         generujPlansze();
         //TODO usun nizej
-        pionkiTab[5][2].ustawDamke();
-        pionkiTab[2][5].ustawDamke();
+        //pionkiTab[5][2].ustawDamke();
+        //pionkiTab[2][5].ustawDamke();
         sprRuchyPionkow();
+        start = true;
     }
 
     public static void main(String[] args) {
@@ -79,7 +79,7 @@ public class Test extends JPanel {
         gracz.dodajPionek(p);
     }
 
-    public void sprCzyDamka(Pionek pionek) {
+    private void sprCzyDamka(Pionek pionek) {
         if (!jestNaPlanszy(pionek.getX(), pionek.getY() - pionek.getK()))
             pionek.ustawDamke();
     }
@@ -128,6 +128,7 @@ public class Test extends JPanel {
         }
     }
 
+    //TODO rozbić metodę
     private void sprRuch() {
     }
 
@@ -169,9 +170,15 @@ public class Test extends JPanel {
             }
     }
 
+    private void czyscPolaRuchu() {
+        for (Pole[] pp : plansza)
+            for (Pole p : pp) {
+                p.setAktywne(false);
+            }
+    }
+
     private void czyscAktywnePionki() {
-        Gracz przeciwnik = kolej == gracz1.getK() ? gracz2 : gracz1;
-        for (Pionek p : przeciwnik.getPionki()) {
+        for (Pionek p : aktualnyPrzeciwnik.getPionki()) {
             p.setMaRuch(false);
             p.setMozeBic(false);
         }
@@ -191,24 +198,35 @@ public class Test extends JPanel {
     }
 
     private void zmienKolej() {
-        kolej *= -1;
+        Gracz tmp = aktualnyGracz;
+        aktualnyGracz = aktualnyPrzeciwnik;
+        aktualnyPrzeciwnik = tmp;
+        sprCzyKoniecGry();
+    }
+
+    private void sprCzyKoniecGry() {
+        if (aktualnyPrzeciwnik.getPionki().isEmpty() || !(graczMaRuchy() || graczMaBicia()))
+            start = false;
     }
 
     private void sprRuchyPionkow() {
         czyscAktywnePionki();
-        Gracz gracz = kolej == gracz1.getK() ? gracz1 : gracz2;
-        for (Pionek p : gracz.getPionki())
+        for (Pionek p : aktualnyGracz.getPionki())
             ustawAktywnePola(p);
         czyscAktywnePola();
+        if (graczMaBicia())
+            aktualnyGracz.getPionki().stream().filter(p -> p.isMaRuch() && !p.isMozeBic()).forEach(p -> p.setMaRuch(false));
     }
 
 
     public void paint(Graphics g) {
         super.paintComponents(g);
-        if (kolej == 1) g.setColor(Pionek.getJasny());
+        if (aktualnyGracz.getK() == 1) g.setColor(Pionek.getJasny());
         else g.setColor(Pionek.getCiemny());
         g.fillOval(10, liczbaPol * height + 10, 20, 20);
         g.drawString(" <- twój ruch", 40, liczbaPol * height + 25);
+        if (!start)
+            g.drawString("Koniec gry", 40, liczbaPol * height + 50);
         paintPlansza(g);
         paintPionki(g);
     }
@@ -219,24 +237,30 @@ public class Test extends JPanel {
             g.fillOval(aktywny.getX() * width - 2, aktywny.getY() * height - 2, width + 4, height + 4);
         }
 
-        for (Pionek p : gracz1.getPionki()) {
-            g.setColor((p.isMaRuch() || p.isMozeBic()) ? p.getAktywnyKolor() : p.getKolor());
-            g.fillOval(p.getX() * width, p.getY() * width, p.getWidth(), p.getHeight());
+        ArrayList<Pionek> pionki = new ArrayList<>(gracz1.getPionki());
+        pionki.addAll(gracz2.getPionki());
+        for (Pionek p : pionki) {
+            if (p.isMozeBic()) {
+                g.setColor(Pionek.getKolorBicia());
+                g.fillOval(p.getX() * width, p.getY() * width, p.getWidth(), p.getHeight());
+                g.setColor(p.getAktywnyKolor());
+                g.fillOval(p.getX() * width + 2, p.getY() * width + 2, p.getWidth() - 4, p.getHeight() - 4);
+            } else {
+                g.setColor(p.isMaRuch() ? p.getAktywnyKolor() : p.getKolor());
+                g.fillOval(p.getX() * width, p.getY() * width, p.getWidth(), p.getHeight());
+            }
             if (p.getRodzajPionka() == RodzajPionka.JDama || p.getRodzajPionka() == RodzajPionka.CDama)
                 g.drawImage(Pionek.getKorona(), p.getX() * width, p.getY() * height, p.getWidth(), p.getHeight(), null);
+
         }
-
-
     }
 
-    public boolean graczMaBicia() {
-        Gracz gracz = kolej == gracz1.getK() ? gracz1 : gracz2;
-        return gracz.getPionki().stream().filter(p -> p.isMozeBic()).count() != 0;
+    private boolean graczMaBicia() {
+        return aktualnyGracz.getPionki().stream().filter(Pionek::isMozeBic).count() != 0;
     }
 
-    public boolean graczMaRuchy() {
-        Gracz gracz = kolej == gracz1.getK() ? gracz1 : gracz2;
-        return gracz.getPionki().stream().filter(p -> p.isMaRuch()).count() != 0;
+    private boolean graczMaRuchy() {
+        return aktualnyGracz.getPionki().stream().filter(Pionek::isMaRuch).count() != 0;
     }
 
 
@@ -277,9 +301,10 @@ public class Test extends JPanel {
             else if (aktywny != null && aktywny.isMaRuch() && plansza[i][j].isAktywne())
                 ruch(i, j);
             else {
-                if (pionkiTab[i][j] != null && pionkiTab[i][j].getK() == kolej) {
+                if (pionkiTab[i][j] != null && pionkiTab[i][j].getK() == aktualnyGracz.getK() && (pionkiTab[i][j].isMaRuch())) {
                     aktywny = pionkiTab[i][j];
                     ustawAktywnePola(aktywny);
+                    if (aktywny.isMozeBic()) czyscPolaRuchu();
                 }
                 repaint();
             }
@@ -302,9 +327,11 @@ public class Test extends JPanel {
         int vi = (aktywny.getX() - i) / Math.abs(aktywny.getX() - i);
         int vj = (aktywny.getY() - j) / Math.abs(aktywny.getY() - j);
         pionkiTab[aktywny.getX()][aktywny.getY()] = null;
+        aktualnyPrzeciwnik.getPionki().remove(pionkiTab[i + vi][j + vj]);
         pionkiTab[i + vi][j + vj] = null;
         aktywny.ustaw(i, j);
         pionkiTab[i][j] = aktywny;
+        aktywny.setMozeBic(false);
         repaint(); ////
         sprCzyDamka(aktywny);
         sprRuchyPionkow();

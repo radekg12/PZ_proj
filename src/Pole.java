@@ -1,9 +1,8 @@
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class Pole {
-    private static Color jasne= new Color(189, 195, 199);
-    private static Color ciemne= new Color(127, 140, 141);
+    private static Color jasne = new Color(189, 195, 199);
+    private static Color ciemne = new Color(127, 140, 141);
     private static Color aktywneKolor = new Color(155, 89, 182);
     private static Color poleBiciaKolor = new Color(192, 57, 43);
     private int kolumna;
@@ -17,8 +16,8 @@ public class Pole {
         this.kolumna = kolumna;
         this.wiersz = wiersz;
         this.color = color;
-        zajete=true;
-        aktywne=false;
+        zajete = true;
+        aktywne = false;
     }
 
     public int getKolumna() {
