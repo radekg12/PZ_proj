@@ -5,6 +5,7 @@ public class Pole {
     private static Color ciemne = new Color(127, 140, 141);
     private static Color aktywneKolor = new Color(155, 89, 182);
     private static Color poleBiciaKolor = new Color(192, 57, 43);
+    private static int size;
     private int kolumna;
     private int wiersz;
     private Color color;
@@ -98,5 +99,13 @@ public class Pole {
 
     public static void setPoleBiciaKolor(Color poleBiciaKolor) {
         Pole.poleBiciaKolor = poleBiciaKolor;
+    }
+
+    public static int getSize() {
+        return size;
+    }
+
+    public static void setSize(int size) {
+        Pole.size = size;
     }
 }

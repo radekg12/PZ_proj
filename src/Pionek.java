@@ -7,8 +7,7 @@ import java.io.IOException;
 public class Pionek {
     private int x;
     private int y;
-    private static int height = 50;
-    private static int width = 50;
+    private static int size = 50;
     private int k;
     private Color kolor;
     private Color aktywnyKolor;
@@ -76,22 +75,6 @@ public class Pionek {
 
     public void setY(int y) {
         this.y = y;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        Pionek.height = height;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        Pionek.width = width;
     }
 
     public int getK() {
@@ -167,10 +150,12 @@ public class Pionek {
         this.aktywnyKolor = aktywnyKolor;
     }
 
-    public static void setSize(int width, int height) {
-        Pionek.width = width;
-        Pionek.height = height;
+    public static void setSize(int size) {
+        Pionek.size = size;
+    }
 
+    public static int getSize() {
+        return size;
     }
 
     public RodzajPionka getRodzajPionka() {

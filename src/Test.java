@@ -1,40 +1,34 @@
-import javax.imageio.ImageIO;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+import java.awt.event.*;
 import java.util.ArrayList;
 
-public class Test extends JPanel {
-    private int height;
-    private int width;
+public class Test extends JComponent {
     private int liczbaPol;
+    private Pionek aktywny;
     private Pionek[][] pionkiTab;
     private Pole[][] plansza;
-    private Pionek aktywny;
-    private BufferedImage icon;
-    private Gracz gracz1, gracz2;
-    private Gracz aktualnyGracz;
-    private Gracz aktualnyPrzeciwnik;
+    private Gracz aktualnyGracz, aktualnyPrzeciwnik;
     private boolean start;
 
 
-    private Test(int width, int height, int liczbaPol) {
-        try {
-            icon = ImageIO.read(new java.io.File("icons/pionek-100.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public Test(int width, int height, int liczbaPol) {
         this.liczbaPol = liczbaPol;
-        this.height = height / liczbaPol;
-        this.width = width / liczbaPol;
+        Pionek.setSize(Math.min(width, height) / liczbaPol);
+        Pole.setSize(Math.min(width, height) / liczbaPol);
         pionkiTab = new Pionek[liczbaPol][liczbaPol];
         plansza = new Pole[liczbaPol][liczbaPol];
         addMouseListener(new Ruchy());
-        aktualnyPrzeciwnik = gracz1 = new Gracz("gracz1", -1);
-        aktualnyGracz = gracz2 = new Gracz("gracz2", 1);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Pionek.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
+                Pole.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
+            }
+        });
+        aktualnyPrzeciwnik = new Gracz("gracz1", -1);
+        aktualnyGracz = new Gracz("gracz2", 1);
         ustawPionki();
         generujPlansze();
         //TODO usun nizej
@@ -44,18 +38,7 @@ public class Test extends JPanel {
         start = true;
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Warcaby");
-        frame.setSize(500, 500);
-        Test test = new Test(400, 400, 8);
-        frame.add(test);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setIconImage(test.icon);
-        frame.setVisible(true);
-    }
-
     private void generujPlansze() {
-        Pionek.setSize(width, height);
         for (int i = 0; i < liczbaPol; i++)
             for (int j = 0; j < liczbaPol; j++)
                 if ((i + j) % 2 == 1) plansza[i][j] = new Pole(i, j, Pole.getCiemne());
@@ -65,11 +48,11 @@ public class Test extends JPanel {
     private void ustawPionki() {
         for (int j = 0; j < 3; j++)
             for (int i = 0; i < liczbaPol; i++)
-                if ((i + j) % 2 == 1) dodajPionek(i, j, gracz1);
+                if ((i + j) % 2 == 1) dodajPionek(i, j, aktualnyPrzeciwnik);
 
         for (int j = 1; j <= 3; j++)
             for (int i = 1; i <= liczbaPol; i++)
-                if ((i + j) % 2 == 1) dodajPionek(liczbaPol - i, liczbaPol - j, gracz2);
+                if ((i + j) % 2 == 1) dodajPionek(liczbaPol - i, liczbaPol - j, aktualnyGracz);
 
     }
 
@@ -206,7 +189,7 @@ public class Test extends JPanel {
     }
 
     private void sprCzyKoniecGry() {
-        if (aktualnyPrzeciwnik.getPionki().isEmpty() || !(graczMaRuchy() || graczMaBicia()))
+        if (aktualnyGracz.getPionki().isEmpty() || !(graczMaRuchy() || graczMaBicia()))
             start = false;
     }
 
@@ -222,12 +205,16 @@ public class Test extends JPanel {
 
     public void paint(Graphics g) {
         super.paintComponents(g);
-        if (aktualnyGracz.getK() == 1) g.setColor(Pionek.getJasny());
-        else g.setColor(Pionek.getCiemny());
-        g.fillOval(10, liczbaPol * height + 10, 20, 20);
-        g.drawString(" <- twój ruch", 40, liczbaPol * height + 25);
-        if (!start)
-            g.drawString("Koniec gry", 40, liczbaPol * height + 50);
+        if (start) {
+            if (aktualnyGracz.getK() == 1) g.setColor(Pionek.getJasny());
+            else g.setColor(Pionek.getCiemny());
+            g.fillOval(10, liczbaPol * Pole.getSize() + 10, 20, 20);
+            g.drawString(" <- twój ruch", 40, liczbaPol * Pole.getSize() + 25);
+        } else {
+            g.drawString("Koniec gry", 40, liczbaPol * Pole.getSize() + 50);
+            g.setColor(aktualnyPrzeciwnik.getPionki().get(0).getKolor());
+            g.drawString(aktualnyPrzeciwnik.getNazwa() + " wygrałeś!!!", 40, liczbaPol * Pole.getSize() + 75);
+        }
         paintPlansza(g);
         paintPionki(g);
     }
@@ -235,33 +222,33 @@ public class Test extends JPanel {
     private void paintPionki(Graphics g) {
         if (aktywny != null) {
             g.setColor(aktywny.getKolor());
-            g.fillOval(aktywny.getX() * width - 3, aktywny.getY() * height - 3, width + 6, height + 6);
+            g.fillOval(aktywny.getX() * Pionek.getSize() - 3, aktywny.getY() * Pionek.getSize() - 3, Pionek.getSize() + 6, Pionek.getSize() + 6);
         }
 
-        ArrayList<Pionek> pionki = new ArrayList<>(gracz1.getPionki());
-        pionki.addAll(gracz2.getPionki());
+        ArrayList<Pionek> pionki = new ArrayList<>(aktualnyGracz.getPionki());
+        pionki.addAll(aktualnyPrzeciwnik.getPionki());
         for (Pionek p : pionki) {
             if (p.isMozeBic()) {
                 g.setColor(Pionek.getKolorBicia());
-                g.fillOval(p.getX() * width, p.getY() * width, p.getWidth(), p.getHeight());
+                g.fillOval(p.getX() * Pionek.getSize(), p.getY() * Pionek.getSize(), Pionek.getSize(), Pionek.getSize());
                 g.setColor(p.getAktywnyKolor());
-                g.fillOval(p.getX() * width + 3, p.getY() * width + 3, p.getWidth() - 6, p.getHeight() - 6);
+                g.fillOval(p.getX() * Pionek.getSize() + 3, p.getY() * Pionek.getSize() + 3, Pionek.getSize() - 6, Pionek.getSize() - 6);
             } else {
                 g.setColor(p.isMaRuch() ? p.getAktywnyKolor() : p.getKolor());
-                g.fillOval(p.getX() * width, p.getY() * width, p.getWidth(), p.getHeight());
+                g.fillOval(p.getX() * Pionek.getSize(), p.getY() * Pionek.getSize(), Pionek.getSize(), Pionek.getSize());
             }
             if (p.getRodzajPionka() == RodzajPionka.JDama || p.getRodzajPionka() == RodzajPionka.CDama)
-                g.drawImage(Pionek.getKorona(), p.getX() * width, p.getY() * height, p.getWidth(), p.getHeight(), null);
+                g.drawImage(Pionek.getKorona(), p.getX() * Pionek.getSize(), p.getY() * Pionek.getSize(), Pionek.getSize(), Pionek.getSize(), null);
 
         }
     }
 
     private boolean graczMaBicia() {
-        return aktualnyGracz.getPionki().stream().filter(Pionek::isMozeBic).count() != 0;
+        return aktualnyGracz.getPionki().stream().anyMatch(Pionek::isMozeBic);
     }
 
     private boolean graczMaRuchy() {
-        return aktualnyGracz.getPionki().stream().filter(Pionek::isMaRuch).count() != 0;
+        return aktualnyGracz.getPionki().stream().anyMatch(Pionek::isMaRuch);
     }
 
 
@@ -269,25 +256,25 @@ public class Test extends JPanel {
         for (Pole[] pp : plansza)
             for (Pole p : pp) {
                 g.setColor(p.getColor());
-                g.fillRect(p.getKolumna() * width, p.getWiersz() * height, width, height);
+                g.fillRect(p.getKolumna() * Pole.getSize(), p.getWiersz() * Pole.getSize(), Pole.getSize(), Pole.getSize());
                 if (p.isAktywne()) {
                     g.setColor(Pole.getAktywneKolor());
-                    g.fillRect(p.getKolumna() * width, p.getWiersz() * height, width, height);
+                    g.fillRect(p.getKolumna() * Pole.getSize(), p.getWiersz() * Pole.getSize(), Pole.getSize(), Pole.getSize());
                     g.setColor(p.getColor());
-                    g.fillRect(p.getKolumna() * width + 2, p.getWiersz() * height + 2, width - 4, height - 4);
+                    g.fillRect(p.getKolumna() * Pole.getSize() + 2, p.getWiersz() * Pole.getSize() + 2, Pole.getSize() - 4, Pole.getSize() - 4);
                 }
                 if (p.isPoleBicia()) {
                     g.setColor(Pole.getPoleBiciaKolor());
-                    g.fillRect(p.getKolumna() * width, p.getWiersz() * height, width, height);
+                    g.fillRect(p.getKolumna() * Pole.getSize(), p.getWiersz() * Pole.getSize(), Pole.getSize(), Pole.getSize());
                     g.setColor(p.getColor());
-                    g.fillRect(p.getKolumna() * width + 2, p.getWiersz() * height + 2, width - 4, height - 4);
+                    g.fillRect(p.getKolumna() * Pole.getSize() + 2, p.getWiersz() * Pole.getSize() + 2, Pole.getSize() - 4, Pole.getSize() - 4);
                 }
 
             }
     }
 
 
-    class Ruchy implements MouseListener {
+    private class Ruchy implements MouseListener {
 
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -295,8 +282,8 @@ public class Test extends JPanel {
 
         @Override
         public void mousePressed(MouseEvent e) {
-            int i = e.getX() / width;
-            int j = e.getY() / height;
+            int i = e.getX() / Pole.getSize();
+            int j = e.getY() / Pole.getSize();
             if (jestNaPlanszy(i, j))
                 if (aktywny != null && aktywny.isMozeBic() && plansza[i][j].isPoleBicia())
                     bij(i, j);
@@ -324,6 +311,7 @@ public class Test extends JPanel {
         public void mouseExited(MouseEvent e) {
         }
     }
+
 
     private void bij(int i, int j) {
         int vi = (aktywny.getX() - i) / Math.abs(aktywny.getX() - i);
