@@ -5,10 +5,17 @@
       <entry_point TYPE="field" FQNAME="RodzajPionka Ciemny" />
     </entry_points>
   </component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+      </list>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_9" default="true" project-jdk-name="9.0" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
   <component name="PropertiesSeparatorManager">
-    <file url="file://$PROJECT_DIR$/bundleName" separator="\u005f" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/bundleName" separator="\u002f" />
   </component>
 </project>
