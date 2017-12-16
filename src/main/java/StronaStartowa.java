@@ -1,37 +1,40 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
 
 public class StronaStartowa extends JPanel implements ZmienJezykListener {
-    private JButton button;
+    private JButton button1, button2;
     private AbstractAction startAction;
-    private OknoGry frame;
+    private OknoGlowne frame;
 
-    public StronaStartowa(OknoGry frame) {
+    public StronaStartowa(OknoGlowne frame) {
         this.frame = frame;
         setBackground(Color.blue);
-        startAction = new AbstractAction() {
+        startAction = new AbstractAction(null, new ImageIcon(getClass().getResource("icons/start_24.png"))) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.zmianaOkna(new Gra(frame, 300, 300, 8));
+                frame.zmianaOkna(new OknoGry(frame, 300, 300, 8));
             }
         };
-        button = new JButton(startAction);
-        add(button, BorderLayout.NORTH);
-        add(new JButton(frame.getMenu().exitAction));
-        frame.getMenu().addZmienJezykListener(this::changeLocal);
+        button1 = new JButton(startAction);
+        button2 = new JButton(frame.getMenu().exitAction);
+        initGUI();
+        frame.getMenu().addZmienJezykListener(this);
     }
 
+    public void initGUI() {
+        SwingUtilities.invokeLater(() -> {
+            add(button1, BorderLayout.NORTH);
+            add(button2, BorderLayout.NORTH);
+        });
+    }
 
     @Override
     public void changeLocal(ZmienJezykEvent event) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                ResourceBundle rb = event.getRb();
-                startAction.putValue(Action.NAME, rb.getString("start"));
-            }
+        SwingUtilities.invokeLater(() -> {
+            ResourceBundle rb = event.getRb();
+            startAction.putValue(Action.NAME, rb.getString("start"));
         });
     }
 
@@ -39,7 +42,7 @@ public class StronaStartowa extends JPanel implements ZmienJezykListener {
         return frame;
     }
 
-    public void setFrame(OknoGry frame) {
+    public void setFrame(OknoGlowne frame) {
         this.frame = frame;
     }
 }

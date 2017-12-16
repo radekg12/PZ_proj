@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class Gra extends JComponent implements ZmienJezykListener {
-    private OknoGry frame;
+    private OknoGlowne frame;
     private int liczbaPol;
     private Pionek aktywny;
     private Pionek[][] pionkiTab;
@@ -16,8 +16,9 @@ public class Gra extends JComponent implements ZmienJezykListener {
     private String player1String, player2String, endString, winString, turnString;
 
 
-    public Gra(OknoGry frame, int width, int height, int liczbaPol) {
-        setPreferredSize(new Dimension(width, height));
+    public Gra(OknoGlowne frame, int width, int height, int liczbaPol) {
+//        setPreferredSize(new Dimension(width, height));
+        setMinimumSize(new Dimension(100, 100));
         this.frame = frame;
         this.liczbaPol = liczbaPol;
         Pionek.setSize(Math.min(width, height) / liczbaPol);
@@ -25,20 +26,25 @@ public class Gra extends JComponent implements ZmienJezykListener {
         pionkiTab = new Pionek[liczbaPol][liczbaPol];
         plansza = new Pole[liczbaPol][liczbaPol];
         addMouseListener(new Ruchy());
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                Pionek.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
-                Pole.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
-            }
-        });
+//        addComponentListener(new ComponentAdapter() {
+//            @Override
+//            public void componentResized(ComponentEvent e) {
+//                Pionek.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
+//                Pole.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
+//            }
+//        });
         aktualnyPrzeciwnik = new Gracz(player1String, -1);
         aktualnyGracz = new Gracz(player2String, 1);
         generujPlansze();
         ustawPionki();
+
+        //TODO usun nizej
+        pionkiTab[5][2].ustawDamke();
+        pionkiTab[2][5].ustawDamke();
+
         sprRuchyPionkow();
         start = true;
-        frame.getMenu().addZmienJezykListener(this::changeLocal);
+        frame.getMenu().addZmienJezykListener(this);
         repaint();
     }
 
@@ -213,7 +219,7 @@ public class Gra extends JComponent implements ZmienJezykListener {
             if (aktualnyGracz.getK() == 1) g.setColor(Pionek.getJasny());
             else g.setColor(Pionek.getCiemny());
             g.fillOval(10, liczbaPol * Pole.getSize() + 10, 20, 20);
-            g.drawString("<- "+turnString, 40, liczbaPol * Pole.getSize() + 25);
+            g.drawString("<- " + turnString, 40, liczbaPol * Pole.getSize() + 25);
         } else {
             g.drawString(endString, 40, liczbaPol * Pole.getSize() + 50);
             g.setColor(aktualnyPrzeciwnik.getPionki().get(0).getKolor());
@@ -277,45 +283,6 @@ public class Gra extends JComponent implements ZmienJezykListener {
             }
     }
 
-    @Override
-    public void changeLocal(ZmienJezykEvent event) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                ResourceBundle rb = event.getRb();
-                player1String=rb.getString("player1String");
-                player2String=rb.getString("player2String");
-                endString=rb.getString("endString");
-                winString=rb.getString("winString");
-                turnString=rb.getString("turnString");
-                repaint();
-            }
-        });
-    }
-
-
-    private class Ruchy extends MouseAdapter {
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-            int i = e.getX() / Pole.getSize();
-            int j = e.getY() / Pole.getSize();
-            if (jestNaPlanszy(i, j))
-                if (aktywny != null && aktywny.isMozeBic() && plansza[i][j].isPoleBicia())
-                    bij(i, j);
-                else if (aktywny != null && aktywny.isMaRuch() && plansza[i][j].isAktywne())
-                    ruch(i, j);
-                else {
-                    if (pionkiTab[i][j] != null && pionkiTab[i][j].getK() == aktualnyGracz.getK() && (pionkiTab[i][j].isMaRuch())) {
-                        aktywny = pionkiTab[i][j];
-                        ustawAktywnePola(aktywny);
-                        if (aktywny.isMozeBic()) czyscPolaRuchu();
-                    }
-                    repaint();
-                }
-        }
-    }
-
 
     private void bij(int i, int j) {
         int vi = (aktywny.getX() - i) / Math.abs(aktywny.getX() - i);
@@ -353,7 +320,42 @@ public class Gra extends JComponent implements ZmienJezykListener {
         return frame;
     }
 
-    public void setFrame(OknoGry frame) {
+    public void setFrame(OknoGlowne frame) {
         this.frame = frame;
+    }
+
+    @Override
+    public void changeLocal(ZmienJezykEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            ResourceBundle rb = event.getRb();
+            player1String = rb.getString("player1String");
+            player2String = rb.getString("player2String");
+            endString = rb.getString("endString");
+            winString = rb.getString("winString");
+            turnString = rb.getString("turnString");
+            repaint();
+        });
+    }
+
+    private class Ruchy extends MouseAdapter {
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            int i = e.getX() / Pole.getSize();
+            int j = e.getY() / Pole.getSize();
+            if (jestNaPlanszy(i, j))
+                if (aktywny != null && aktywny.isMozeBic() && plansza[i][j].isPoleBicia())
+                    bij(i, j);
+                else if (aktywny != null && aktywny.isMaRuch() && plansza[i][j].isAktywne())
+                    ruch(i, j);
+                else {
+                    if (pionkiTab[i][j] != null && pionkiTab[i][j].getK() == aktualnyGracz.getK() && (pionkiTab[i][j].isMaRuch())) {
+                        aktywny = pionkiTab[i][j];
+                        ustawAktywnePola(aktywny);
+                        if (aktywny.isMozeBic()) czyscPolaRuchu();
+                    }
+                    repaint();
+                }
+        }
     }
 }

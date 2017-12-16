@@ -1,7 +1,6 @@
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 public class Pionek {
@@ -24,7 +23,7 @@ public class Pionek {
 
     static {
         try {
-            korona = ImageIO.read(new File("icons/korona-100.png"));
+            korona = ImageIO.read(Pionek.class.getResource("icons/korona-100.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
