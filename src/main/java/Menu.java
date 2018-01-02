@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -6,15 +5,19 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class Menu extends JMenuBar implements ZmienJezykListener {
+    private OknoGlowne frame;
     private JMenu file, edit, view, changeLook, changeLanguage;
     private JMenuItem look1, look2, look3, save, exit, chPL, chEN;
-    AbstractAction exitAction, changeToPL, changeToEN;
+    AbstractAction exitAction;
+    private AbstractAction changeToPL;
+    private AbstractAction changeToEN;
     private Locale locale = Locale.getDefault();
     private ResourceBundle rb = ResourceBundle.getBundle("Languages", locale);
     private ArrayList<ZmienJezykListener> zmienJezykListeners = new ArrayList<>();
 
 
-    public Menu() {
+    public Menu(OknoGlowne frame) {
+        this.frame = frame;
         initMenu();
         initGUI();
     }
@@ -28,7 +31,7 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.exit(1);
+                System.exit(0);
             }
         };
 
@@ -37,14 +40,9 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
 
         changeLook = new JMenu();
         changeLook.setIcon(new ImageIcon(getClass().getResource("icons/look_24.png")));
-        look1 = new JMenuItem();
-        look2 = new JMenuItem();
-        look3 = new JMenuItem();
-
-
-        look1.addActionListener(new chLook("Look 1", new ImageIcon(getClass().getResource("icons/save_24.png"))));
-        look2.addActionListener(new chLook("Look 2", null));
-        look3.addActionListener(new chLook("Look 3", null));
+        look1 = new JMenuItem(new chLook("Look 1", new ImageIcon(getClass().getResource("icons/l1_24.png"))));
+        look2 = new JMenuItem(new chLook("Look 2", new ImageIcon(getClass().getResource("icons/l2_24.png"))));
+        look3 = new JMenuItem(new chLook("Look 3", new ImageIcon(getClass().getResource("icons/l3_24.png"))));
 
         class chLanguageAction extends AbstractAction {
             String language;
@@ -65,8 +63,8 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
             }
         }
 
-        changeToPL = new chLanguageAction("pl", "PL", new ImageIcon(getClass().getResource("icons/pl_24.png")));
-        changeToEN = new chLanguageAction("en", "US", new ImageIcon(getClass().getResource("icons/en_24.png")));
+        changeToPL = new chLanguageAction("pl", "PL", new ImageIcon(getClass().getResource("icons/pll_24.png")));
+        changeToEN = new chLanguageAction("en", "US", new ImageIcon(getClass().getResource("icons/uk_24.png")));
 
         changeLanguage = new JMenu();
         changeLanguage.setIcon(new ImageIcon(getClass().getResource("icons/lang_24.png")));
@@ -92,13 +90,9 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
             view.add(changeLanguage);
             changeLanguage.add(chPL);
             changeLanguage.add(chEN);
+            look1.doClick();
         });
 
-    }
-
-
-    public void update() {
-        SwingUtilities.updateComponentTreeUI(this);
     }
 
 
@@ -152,7 +146,7 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
             } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException | IllegalAccessException e1) {
                 e1.printStackTrace();
             }
-            update();
+            SwingUtilities.updateComponentTreeUI(frame);
         }
     }
 

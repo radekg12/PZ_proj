@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,11 +10,13 @@ import java.util.ResourceBundle;
 
 public class OknoGlowne extends JFrame implements ZmienJezykListener {
     private BufferedImage icon;
-    public static final int DEFAULT_WIDTH = 500;
-    public static final int DEFAULT_HEIGHT = 500;
+    public static final int DEFAULT_WIDTH = 720;
+    public static final int DEFAULT_HEIGHT = 480;
     private Menu menu;
     private String gameName;
     Image image;
+    OknoGlowne frame;
+
 
     public OknoGlowne() {
 
@@ -29,22 +32,31 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
 //        }
         image = new ImageIcon(getClass().getResource("icons/myLogo.png")).getImage();
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        addWindowListener(new Okno());
         // setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(image);
         getContentPane().setBackground(new Color(48, 48, 48));
-        menu = new Menu();
+        menu = new Menu(this);
         setJMenuBar(menu);
+        addWindowListener(new MyDialog());
         menu.addZmienJezykListener(this);
+        UIManager.getDefaults().put("Label.font", new Font(Font.DIALOG, Font.BOLD, 14));
+        UIManager.getDefaults().put("Label.foreground", new Color(195, 195, 195));
         //setLayout(new GridLayout(1, 3, 20, 20));
         //getContentPane().add(new Test(this, 400, 400, 8));
         //panel.setSize(300,300);
         //panel.setBackground(Color.green.darker());
         //etContentPane().add(panel);
-        OknoGlowne frame=this;
-        SwingUtilities.invokeLater(() -> getContentPane().add(new StronaStartowa(frame)));
-
+//        addComponentListener(new ComponentAdapter() {
+//            @Override
+//            public void componentResized(ComponentEvent e) {
+//                setSize(getSize().width, 2*getSize().width/3);
+//            }
+//        });
+        frame = this;
+        SwingUtilities.invokeLater(() -> {
+            getContentPane().add(new StronaStartowa(frame));
+        });
         setVisible(true);
     }
 
@@ -81,21 +93,33 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
     }
 
 
-    private class Okno extends WindowAdapter {
-        JButton anulujButton = new JButton("Anuluj");
-        JButton zapiszButton = new JButton("Zapisz");
-        JButton zamknijButton = new JButton("Zamknij");
+    private class MyDialog extends WindowAdapter implements ZmienJezykListener {
+        JButton anulujButton = new JButton();
+        JButton zapiszButton = new JButton();
+        JButton zamknijButton = new JButton();
         JButton[] buttons = {anulujButton, zapiszButton, zamknijButton};
-        String komunikat = "Co mam zrobić? ";
-        String tytul = "Program zmodyfikowany";
+        String komunikat;
+        String tytul;
+        Icon alertIcon;
+        JOptionPane optionPane;
+        JDialog dialog;
 
-        Okno() {
+        MyDialog() {
             zamknijButton.addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.exit(0);
+                    System.exit(1);
                 }
             });
+            MyDialog okno = this;
+            anulujButton.addActionListener(new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    dialog.setVisible(false);
+                }
+            });
+            alertIcon = new ImageIcon(getClass().getResource("icons/warning_2.png"));
+            menu.addZmienJezykListener(this);
         }
 
         @Override
@@ -109,15 +133,24 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
 
         public void zamykanie() {
 
-            JOptionPane.showOptionDialog(
-                    null,                      // okno
-                    komunikat,          // komunikat
-                    tytul,   // tytuł
-                    JOptionPane.DEFAULT_OPTION, // rodzaj przycisków u dołu (tu nieważny)
-                    JOptionPane.QUESTION_MESSAGE,// typ komunikatu (standardowa ikona)
-                    null,                        // własna ikona (tu: brak)
-                    buttons,                       // własne opcje - przyciski
-                    buttons[1]);                   // domyślny przycisk
+            optionPane = new JOptionPane(
+                    komunikat, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, alertIcon, buttons, buttons[1]
+            );
+
+            dialog = optionPane.createDialog(frame, tytul);
+            dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+            dialog.setVisible(true);
+
+        }
+
+        @Override
+        public void changeLocal(ZmienJezykEvent event) {
+            ResourceBundle rb = event.getRb();
+            komunikat = (rb.getString("alert.statement"));
+            tytul = (rb.getString("alert.title"));
+            anulujButton.setText(rb.getString("cancel"));
+            zamknijButton.setText(rb.getString("exit"));
+            zapiszButton.setText(rb.getString("save"));
         }
     }
 }

@@ -1,7 +1,9 @@
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -14,11 +16,13 @@ public class Gra extends JComponent implements ZmienJezykListener {
     private Gracz aktualnyGracz, aktualnyPrzeciwnik;
     private boolean start;
     private String player1String, player2String, endString, winString, turnString;
+    private ArrayList<ZmienKolejListener> zmienKolejListeners = new ArrayList<>();
+    private ArrayList<WygranaListener> wygranaListeners = new ArrayList<>();
 
 
-    public Gra(OknoGlowne frame, int width, int height, int liczbaPol) {
+    public Gra(OknoGlowne frame, int width, int height, int liczbaPol, Gracz gracz1, Gracz gracz2) {
 //        setPreferredSize(new Dimension(width, height));
-        setMinimumSize(new Dimension(100, 100));
+        setPreferredSize(new Dimension(400, 400));
         this.frame = frame;
         this.liczbaPol = liczbaPol;
         Pionek.setSize(Math.min(width, height) / liczbaPol);
@@ -26,15 +30,18 @@ public class Gra extends JComponent implements ZmienJezykListener {
         pionkiTab = new Pionek[liczbaPol][liczbaPol];
         plansza = new Pole[liczbaPol][liczbaPol];
         addMouseListener(new Ruchy());
-//        addComponentListener(new ComponentAdapter() {
-//            @Override
-//            public void componentResized(ComponentEvent e) {
-//                Pionek.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
-//                Pole.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
-//            }
-//        });
-        aktualnyPrzeciwnik = new Gracz(player1String, -1);
-        aktualnyGracz = new Gracz(player2String, 1);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                Pionek.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
+                Pole.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
+                int x = Math.min(getWidth(), getHeight());
+            }
+        });
+//        aktualnyPrzeciwnik = new Gracz(player1String, -1);
+//        aktualnyGracz = new Gracz(player2String, 1);
+        aktualnyGracz = gracz2;
+        aktualnyPrzeciwnik = gracz1;
         generujPlansze();
         ustawPionki();
 
@@ -46,6 +53,14 @@ public class Gra extends JComponent implements ZmienJezykListener {
         start = true;
         frame.getMenu().addZmienJezykListener(this);
         repaint();
+    }
+
+    public Gracz getAktualnyGracz() {
+        return aktualnyGracz;
+    }
+
+    public Gracz getAktualnyPrzeciwnik() {
+        return aktualnyPrzeciwnik;
     }
 
     private void generujPlansze() {
@@ -196,11 +211,15 @@ public class Gra extends JComponent implements ZmienJezykListener {
         aktualnyPrzeciwnik = tmp;
         sprRuchyPionkow();
         sprCzyKoniecGry();
+        fireZmienKolejEvent();
     }
 
     private void sprCzyKoniecGry() {
-        if (aktualnyGracz.getPionki().isEmpty() || !(graczMaRuchy() || graczMaBicia()))
+        if (aktualnyGracz.getPionki().isEmpty() || !(graczMaRuchy() || graczMaBicia())) {
             start = false;
+            aktualnyPrzeciwnik.setWon(true);
+            fireWygranaEvent();
+        }
     }
 
     private void sprRuchyPionkow() {
@@ -215,16 +234,6 @@ public class Gra extends JComponent implements ZmienJezykListener {
 
     public void paint(Graphics g) {
         super.paintComponents(g);
-        if (start) {
-            if (aktualnyGracz.getK() == 1) g.setColor(Pionek.getJasny());
-            else g.setColor(Pionek.getCiemny());
-            g.fillOval(10, liczbaPol * Pole.getSize() + 10, 20, 20);
-            g.drawString("<- " + turnString, 40, liczbaPol * Pole.getSize() + 25);
-        } else {
-            g.drawString(endString, 40, liczbaPol * Pole.getSize() + 50);
-            g.setColor(aktualnyPrzeciwnik.getPionki().get(0).getKolor());
-            g.drawString(aktualnyPrzeciwnik.getNazwa() + winString, 40, liczbaPol * Pole.getSize() + 75);
-        }
         paintPlansza(g);
         paintPionki(g);
     }
@@ -300,7 +309,12 @@ public class Gra extends JComponent implements ZmienJezykListener {
             aktywny = null;
             zmienKolej();
             //repaint(); ////
-        } else ustawAktywnePola(aktywny);
+        } else {
+            ustawAktywnePola(aktywny);
+            czyscPolaRuchu();
+            aktywny.setMaRuch(false);
+            repaint();
+        }
         repaint();
     }
 
@@ -328,13 +342,37 @@ public class Gra extends JComponent implements ZmienJezykListener {
     public void changeLocal(ZmienJezykEvent event) {
         SwingUtilities.invokeLater(() -> {
             ResourceBundle rb = event.getRb();
-            player1String = rb.getString("player1String");
-            player2String = rb.getString("player2String");
             endString = rb.getString("endString");
             winString = rb.getString("winString");
             turnString = rb.getString("turnString");
             repaint();
         });
+    }
+
+    public synchronized void addZmienKolejListener(ZmienKolejListener l) {
+        zmienKolejListeners.add(l);
+    }
+
+    public synchronized void removeWygranaListener(WygranaListener l) {
+        wygranaListeners.remove(l);
+    }
+
+    private synchronized void fireWygranaEvent() {
+        WygranaEvent event = new WygranaEvent(this, aktualnyPrzeciwnik, aktualnyGracz);
+        for (WygranaListener l : wygranaListeners) l.wygrana(event);
+    }
+
+    public synchronized void addWygranaListener(WygranaListener l) {
+        wygranaListeners.add(l);
+    }
+
+    public synchronized void removeZmienKolejListener(ZmienJezykListener l) {
+        zmienKolejListeners.remove(l);
+    }
+
+    private synchronized void fireZmienKolejEvent() {
+        ZmienKolejEvent event = new ZmienKolejEvent(this, aktualnyGracz);
+        for (ZmienKolejListener l : zmienKolejListeners) l.zmienKolej(event);
     }
 
     private class Ruchy extends MouseAdapter {
