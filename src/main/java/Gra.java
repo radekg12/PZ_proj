@@ -359,7 +359,12 @@ public class Gra extends JComponent implements ZmienJezykListener {
 
     private synchronized void fireWygranaEvent() {
         WygranaEvent event = new WygranaEvent(this, aktualnyPrzeciwnik, aktualnyGracz);
-        for (WygranaListener l : wygranaListeners) l.wygrana(event);
+        int i = 0;
+        for (WygranaListener l : wygranaListeners) {
+            l.wygrana(event);
+            i++;
+        }
+        System.out.println("fire do: " + i);
     }
 
     public synchronized void addWygranaListener(WygranaListener l) {

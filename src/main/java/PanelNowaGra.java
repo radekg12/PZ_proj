@@ -16,14 +16,8 @@ public class PanelNowaGra extends JPanel implements ZmienJezykListener {
     public PanelNowaGra(OknoGlowne frame) {
         super(new GridBagLayout());
         this.frame = frame;
-        Font myFont = new Font(Font.DIALOG, Font.ITALIC, 12);
-        Color fontColor = new Color(195, 195, 195);
         label1 = new JLabel("Label 1");
-        label1.setForeground(Color.PINK);
-        label1.setFont(myFont);
         label2 = new JLabel("Label 2");
-        label2.setForeground(fontColor);
-        label2.setFont(myFont);
         textField1 = new JTextField("Wprowadz imie 1");
         textField2 = new JTextField("Wprowadz imie 2");
         //

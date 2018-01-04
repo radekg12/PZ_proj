@@ -89,10 +89,11 @@ public class OknoGry extends JPanel implements ZmienJezykListener, WygranaListen
             @Override
             protected Void doInBackground() throws Exception {
                 Baza baza = new Baza();
-                baza.zapiszWyniki(event);
+                baza.zapiszWyniki(gracz1, gracz2);
                 baza.closeConnection();
                 return null;
             }
-        };
+        }.execute();
+        System.out.println("Wygrana - OknoGry");
     }
 }

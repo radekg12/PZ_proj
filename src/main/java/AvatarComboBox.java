@@ -11,15 +11,17 @@ public class AvatarComboBox extends JPanel {
     private ArrayList<Image> images = new ArrayList<>();
     private ArrayList<Integer> imageIndex = new ArrayList<>();
     private JComboBox avatarList;
+    private Color color = new Color(46, 46, 46);
+    private Color selectedColor = new Color(64, 64, 64);
 
 
     public AvatarComboBox() {
         avatarList = new JComboBox();
+        setOpaque(false);
         ComboBoxRenderer renderer = new ComboBoxRenderer();
         renderer.setPreferredSize(new Dimension(100, 100));
         avatarList.setRenderer(renderer);
         avatarList.setMaximumRowCount(3);
-        SwingUtilities.invokeLater(() -> add(avatarList, BorderLayout.NORTH));
 
         String s = getClass().getResource("icons/avatars").toString().replace("file:/", "");
         File file = new File(s);
@@ -30,6 +32,10 @@ public class AvatarComboBox extends JPanel {
                 int i = 0;
                 for (File f : file.listFiles()) {
                     try {
+
+                        String a = f.getName();
+                        String b = f.getPath();
+
                         img = ImageIO.read(f);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -51,6 +57,8 @@ public class AvatarComboBox extends JPanel {
                 }
             }
         }.execute();
+        avatarList.getEditor().getEditorComponent().setBackground(color);
+        SwingUtilities.invokeLater(() -> add(avatarList));
     }
 
     public Image getSelectedImage() {
@@ -70,18 +78,18 @@ public class AvatarComboBox extends JPanel {
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
 
             Integer selectedIndex = (Integer) value;
-
             if (isSelected) {
-                setBackground(list.getSelectionBackground());
+                setBackground(selectedColor);
                 setForeground(list.getSelectionForeground());
             } else {
-                setBackground(list.getBackground());
+                setBackground(color);
                 setForeground(list.getForeground());
             }
 
             if (selectedIndex != null) {
                 Image icon = images.get(selectedIndex);
                 setIcon(new ImageIcon(icon));
+
             }
             return this;
         }

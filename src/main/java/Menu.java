@@ -7,8 +7,8 @@ import java.util.ResourceBundle;
 public class Menu extends JMenuBar implements ZmienJezykListener {
     private OknoGlowne frame;
     private JMenu file, edit, view, changeLook, changeLanguage;
-    private JMenuItem look1, look2, look3, save, exit, chPL, chEN;
-    AbstractAction exitAction;
+    private JMenuItem look1, look2, look3, save, exit, chPL, chEN, score;
+    AbstractAction exitAction, scoreAcrion;
     private AbstractAction changeToPL;
     private AbstractAction changeToEN;
     private Locale locale = Locale.getDefault();
@@ -35,8 +35,16 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
             }
         };
 
+        scoreAcrion = new AbstractAction(null, new ImageIcon(getClass().getResource("icons/wyniki_24.png"))) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new PanelWyniki(frame);
+            }
+        };
+
         save = new JMenuItem(null, new ImageIcon(getClass().getResource("icons/save_24.png")));
         exit = new JMenuItem(exitAction);
+        score = new JMenuItem(scoreAcrion);
 
         changeLook = new JMenu();
         changeLook.setIcon(new ImageIcon(getClass().getResource("icons/look_24.png")));
@@ -78,6 +86,7 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
         SwingUtilities.invokeLater(() -> {
             add(file);
             file.add(save);
+            file.add(score);
             file.add(exit);
 
             add(edit);
@@ -95,6 +104,18 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
 
     }
 
+    public OknoGlowne getFrame() {
+        return frame;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return locale;
+    }
+
+    public ResourceBundle getRb() {
+        return rb;
+    }
 
     @Override
     public void changeLocal(ZmienJezykEvent event) {
@@ -108,6 +129,7 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
             look3.setText(rb.getString("look3"));
             save.setText(rb.getString("save"));
             exitAction.putValue(Action.NAME, rb.getString("exit"));
+            scoreAcrion.putValue(Action.NAME, rb.getString("score"));
             changeLook.setText(rb.getString("chLook"));
             changeLanguage.setText(rb.getString("chLanguage"));
             changeToPL.putValue(Action.NAME, rb.getString("pl"));

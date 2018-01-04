@@ -42,6 +42,8 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
         menu.addZmienJezykListener(this);
         UIManager.getDefaults().put("Label.font", new Font(Font.DIALOG, Font.BOLD, 14));
         UIManager.getDefaults().put("Label.foreground", new Color(195, 195, 195));
+        UIManager.put("ComboBox.background", new Color(48, 48, 48));
+        UIManager.put("ComboBox.selectionBackground", new Color(64, 64, 64));
         //setLayout(new GridLayout(1, 3, 20, 20));
         //getContentPane().add(new Test(this, 400, 400, 8));
         //panel.setSize(300,300);
@@ -57,6 +59,7 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
         SwingUtilities.invokeLater(() -> {
             getContentPane().add(new StronaStartowa(frame));
         });
+
         setVisible(true);
     }
 
@@ -94,15 +97,16 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
 
 
     private class MyDialog extends WindowAdapter implements ZmienJezykListener {
-        JButton anulujButton = new JButton();
+        JButton anulujButton;
         JButton zapiszButton = new JButton();
         JButton zamknijButton = new JButton();
-        JButton[] buttons = {anulujButton, zapiszButton, zamknijButton};
+        JButton[] buttons;
         String komunikat;
         String tytul;
         Icon alertIcon;
         JOptionPane optionPane;
         JDialog dialog;
+        AbstractAction anulujAction;
 
         MyDialog() {
             zamknijButton.addActionListener(new AbstractAction() {
@@ -112,14 +116,21 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
                 }
             });
             MyDialog okno = this;
-            anulujButton.addActionListener(new AbstractAction() {
+            anulujAction = new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     dialog.setVisible(false);
                 }
-            });
+            };
+            anulujButton = new JButton(anulujAction);
+            buttons = new JButton[]{anulujButton, zapiszButton, zamknijButton};
             alertIcon = new ImageIcon(getClass().getResource("icons/warning_2.png"));
             menu.addZmienJezykListener(this);
+            optionPane = new JOptionPane(
+                    komunikat, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, alertIcon, buttons, buttons[1]
+            );
+            dialog = optionPane.createDialog(tytul);
+
         }
 
         @Override
@@ -133,12 +144,7 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
 
         public void zamykanie() {
 
-            optionPane = new JOptionPane(
-                    komunikat, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, alertIcon, buttons, buttons[1]
-            );
-
-            dialog = optionPane.createDialog(frame, tytul);
-            dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+            dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             dialog.setVisible(true);
 
         }

@@ -50,5 +50,7 @@ public class DolnaBelka extends JPanel implements ZmienKolejListener, ZmienJezyk
     @Override
     public void wygrana(WygranaEvent event) {
         SwingUtilities.invokeLater(() -> label.setText(event.getWygrany().getNazwa() + winString + " ! ! ! "));
+        repaint();
+        System.out.println("Wygrana - DolnaBelka");
     }
 }

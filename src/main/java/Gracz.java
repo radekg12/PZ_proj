@@ -6,7 +6,7 @@ public class Gracz {
     private ArrayList<Pionek> pionki = new ArrayList<>();
     private Image avatar;
     private int k;
-    boolean won = false;
+    private boolean won = false;
 
     public Gracz() {
     }
@@ -17,6 +17,7 @@ public class Gracz {
         this.k = k;
 
     }
+
 
     public String getNazwa() {
         return nazwa;

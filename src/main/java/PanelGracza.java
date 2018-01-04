@@ -8,7 +8,6 @@ import java.io.IOException;
 
 public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaListener {
     private JButton button = new JButton("usun");
-    private OknoGlowne frame;
     private Gracz gracz;
     private boolean aktywny;
     private final Color color = new Color(64, 64, 64);
@@ -17,11 +16,9 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
     private JLabel avatarLabel;
     private boolean won;
     private BufferedImage confetti;
-    private Image confetti2;
 
 
     public PanelGracza(OknoGlowne frame, Gracz gracz, Gra gra) {
-        this.frame = frame;
         setMinimumSize(new Dimension(100, 100));
         setMaximumSize(new Dimension(250, 250));
         setPreferredSize(new Dimension(150, 150));
@@ -36,8 +33,7 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
         aktywny = gracz.getK() == 1;
         setBackground(aktywny ? activeColor : color);
         nazwaLabel = new JLabel(gracz.getNazwa());
-        //nazwaLabel.setFont(font);
-        //nazwaLabel.setForeground(fontColor);
+        nazwaLabel.setHorizontalAlignment(JLabel.CENTER);
         avatarLabel = new JLabel(new ImageIcon(gracz.getAvatar()));
         gra.addZmienKolejListener(this);
         gra.addWygranaListener(this);
@@ -46,7 +42,6 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
         } catch (IOException e) {
             e.printStackTrace();
         }
-        confetti2 = new ImageIcon(getClass().getResource("icons/confetti.gif")).getImage();
         initGUI();
     }
 
@@ -78,7 +73,9 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
     public void wygrana(WygranaEvent event) {
         if (event.getWygrany() == gracz) {
             won = true;
+            setBackground(color);
             repaint();
+            System.out.println("Wygrana - PanelGracza");
         }
     }
 }
