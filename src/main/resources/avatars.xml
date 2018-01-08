@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE avatars [
+        <!ELEMENT avatars (avatar*)>
+        <!ELEMENT avatar (name, sex)>
+        <!ELEMENT name (#PCDATA)>
+        <!ELEMENT sex (#PCDATA)>
+        ]>
+<avatars>
+    <avatar>
+        <name>boy</name>
+        <sex>m</sex>
+    </avatar>
+    <avatar>
+        <name>boy-1</name>
+        <sex>m</sex>
+    </avatar>
+    <avatar>
+        <name>girl</name>
+        <sex>f</sex>
+    </avatar>
+    <avatar>
+        <name>girl-1</name>
+        <sex>f</sex>
+    </avatar>
+    <avatar>
+        <name>man</name>
+        <sex>m</sex>
+    </avatar>
+    <avatar>
+        <name>man-1</name>
+        <sex>m</sex>
+    </avatar>
+    <avatar>
+        <name>man-2</name>
+        <sex>m</sex>
+    </avatar>
+    <avatar>
+        <name>man-3</name>
+        <sex>f</sex>
+    </avatar>
+    <avatar>
+        <name>man-4</name>
+        <sex>f</sex>
+    </avatar>
+</avatars>

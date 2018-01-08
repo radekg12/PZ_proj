@@ -1,10 +1,14 @@
 
+import org.xml.sax.SAXException;
+
 import javax.swing.*;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
@@ -30,6 +34,8 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+
+
         image = new ImageIcon(getClass().getResource("icons/myLogo.png")).getImage();
         setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         // setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -44,6 +50,12 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
         UIManager.getDefaults().put("Label.foreground", new Color(195, 195, 195));
         UIManager.put("ComboBox.background", new Color(48, 48, 48));
         UIManager.put("ComboBox.selectionBackground", new Color(64, 64, 64));
+        UIManager.put("RadioButton.background", new Color(46, 46, 46));
+        UIManager.put("RadioButton.foreground", new Font(Font.DIALOG, Font.BOLD, 14));
+        UIManager.put("RadioButton.font", new Color(195, 195, 195));
+        UIManager.put("TextField.background", new Color(46, 46, 46));
+        UIManager.put("TextField.font", new Font(Font.DIALOG, Font.BOLD, 14));
+        UIManager.put("TextField.foreground", new Color(195, 195, 195));
         //setLayout(new GridLayout(1, 3, 20, 20));
         //getContentPane().add(new Test(this, 400, 400, 8));
         //panel.setSize(300,300);
