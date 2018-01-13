@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class WynikiTableModel extends AbstractTableModel {
-    ArrayList<Wyniki> wynikis;
-    ResourceBundle rb;
+    private ArrayList<Wyniki> wynikis;
+    private ResourceBundle rb;
 
     public WynikiTableModel(ArrayList<Wyniki> wynikis, OknoGlowne frame) {
         rb = frame.getMenu().getRb();

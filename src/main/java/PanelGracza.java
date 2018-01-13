@@ -5,13 +5,14 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaListener {
     private JButton button = new JButton("usun");
     private Gracz gracz;
     private boolean aktywny;
-    private final Color color = new Color(64, 64, 64);
-    private final Color activeColor = new Color(80, 80, 80);
+    private Color color, activeColor;
     private JLabel nazwaLabel;
     private JLabel avatarLabel;
     private boolean won;
@@ -19,9 +20,7 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
 
 
     public PanelGracza(OknoGlowne frame, Gracz gracz, Gra gra) {
-        setMinimumSize(new Dimension(100, 100));
-        setMaximumSize(new Dimension(250, 250));
-        setPreferredSize(new Dimension(150, 150));
+        loadProperties();
         button.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -47,7 +46,6 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
 
     public void initGUI() {
         SwingUtilities.invokeLater(() -> {
-            //add(button);
             setLayout(new BorderLayout());
             add(nazwaLabel, BorderLayout.NORTH);
             add(avatarLabel, BorderLayout.CENTER);
@@ -76,6 +74,29 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
             setBackground(color);
             repaint();
             System.out.println("Wygrana - PanelGracza");
+        }
+    }
+
+    private void loadProperties() {
+        Properties properties = new Properties();
+        InputStream input = null;
+
+        try {
+            input = Pionek.class.getResource("config.properties").openStream();
+            properties.load(input);
+
+            color = new Color(Integer.parseInt(properties.getProperty("background.bright"), 16));
+            activeColor = new Color(Integer.parseInt(properties.getProperty("background.bright2"), 16));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }

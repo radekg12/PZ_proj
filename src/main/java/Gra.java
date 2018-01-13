@@ -4,10 +4,13 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
-public class Gra extends JComponent implements ZmienJezykListener {
+public class Gra extends JComponent{
     private OknoGlowne frame;
     private int liczbaPol;
     private Pionek aktywny;
@@ -15,18 +18,18 @@ public class Gra extends JComponent implements ZmienJezykListener {
     private Pole[][] plansza;
     private Gracz aktualnyGracz, aktualnyPrzeciwnik;
     private boolean start;
-    private String player1String, player2String, endString, winString, turnString;
     private ArrayList<ZmienKolejListener> zmienKolejListeners = new ArrayList<>();
     private ArrayList<WygranaListener> wygranaListeners = new ArrayList<>();
 
 
-    public Gra(OknoGlowne frame, int width, int height, int liczbaPol, Gracz gracz1, Gracz gracz2) {
+    public Gra(OknoGlowne frame, int width, int height, Gracz gracz1, Gracz gracz2) {
 //        setPreferredSize(new Dimension(width, height));
-        setPreferredSize(new Dimension(400, 400));
+        //setPreferredSize(new Dimension(400, 400));
         this.frame = frame;
         this.liczbaPol = liczbaPol;
-        Pionek.setSize(Math.min(width, height) / liczbaPol);
-        Pole.setSize(Math.min(width, height) / liczbaPol);
+        //TODO
+        //Pionek.setSize(Math.min(width, height) / liczbaPol);
+        //Pole.setSize(Math.min(width, height) / liczbaPol);
         pionkiTab = new Pionek[liczbaPol][liczbaPol];
         plansza = new Pole[liczbaPol][liczbaPol];
         addMouseListener(new Ruchy());
@@ -46,12 +49,11 @@ public class Gra extends JComponent implements ZmienJezykListener {
         ustawPionki();
 
         //TODO usun nizej
-        pionkiTab[5][2].ustawDamke();
-        pionkiTab[2][5].ustawDamke();
+        // pionkiTab[5][2].ustawDamke();
+        // pionkiTab[2][5].ustawDamke();
 
         sprRuchyPionkow();
         start = true;
-        frame.getMenu().addZmienJezykListener(this);
         repaint();
     }
 
@@ -338,17 +340,6 @@ public class Gra extends JComponent implements ZmienJezykListener {
         this.frame = frame;
     }
 
-    @Override
-    public void changeLocal(ZmienJezykEvent event) {
-        SwingUtilities.invokeLater(() -> {
-            ResourceBundle rb = event.getRb();
-            endString = rb.getString("endString");
-            winString = rb.getString("winString");
-            turnString = rb.getString("turnString");
-            repaint();
-        });
-    }
-
     public synchronized void addZmienKolejListener(ZmienKolejListener l) {
         zmienKolejListeners.add(l);
     }
@@ -378,6 +369,27 @@ public class Gra extends JComponent implements ZmienJezykListener {
     private synchronized void fireZmienKolejEvent() {
         ZmienKolejEvent event = new ZmienKolejEvent(this, aktualnyGracz);
         for (ZmienKolejListener l : zmienKolejListeners) l.zmienKolej(event);
+    }
+
+    private void loadProperties() {
+        Properties properties = new Properties();
+        InputStream input = null;
+
+        try {
+            input = getClass().getResource("config.properties").openStream();
+            properties.load(input);
+            liczbaPol = Integer.parseInt(properties.getProperty("liczbaPol"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private class Ruchy extends MouseAdapter {

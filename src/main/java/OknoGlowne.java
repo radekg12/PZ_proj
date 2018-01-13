@@ -1,72 +1,51 @@
-
-import org.xml.sax.SAXException;
-
 import javax.swing.*;
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class OknoGlowne extends JFrame implements ZmienJezykListener {
-    private BufferedImage icon;
-    public static final int DEFAULT_WIDTH = 720;
-    public static final int DEFAULT_HEIGHT = 480;
+    private int defaultWidth, defaultHeight;
     private Menu menu;
     private String gameName;
-    Image image;
-    OknoGlowne frame;
+    private Image image;
+    private OknoGlowne frame;
+    private Color backgroundColor, backgroundColorLight, foregroundColor;
+    private Font myFont1;
 
 
     public OknoGlowne() {
 
-//        String coss = getClass().getClassLoader().getResource("icons/aaa.png").getPath();
-//
-//        URL url = getClass().getResource("icons/myLogo.png");
-//        URL url2 = OknoGlowne.class.getResource("icons/myLogo.png");
-//        try {
-//            File file = new File(url.getFile());
-//            icon = ImageIO.read(file);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-
+        loadProperties();
         image = new ImageIcon(getClass().getResource("icons/myLogo.png")).getImage();
-        setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        setSize(defaultWidth, defaultHeight);
         // setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(image);
-        getContentPane().setBackground(new Color(48, 48, 48));
         menu = new Menu(this);
         setJMenuBar(menu);
         addWindowListener(new MyDialog());
         menu.addZmienJezykListener(this);
-        UIManager.getDefaults().put("Label.font", new Font(Font.DIALOG, Font.BOLD, 14));
-        UIManager.getDefaults().put("Label.foreground", new Color(195, 195, 195));
-        UIManager.put("ComboBox.background", new Color(48, 48, 48));
-        UIManager.put("ComboBox.selectionBackground", new Color(64, 64, 64));
-        UIManager.put("RadioButton.background", new Color(46, 46, 46));
-        UIManager.put("RadioButton.foreground", new Font(Font.DIALOG, Font.BOLD, 14));
-        UIManager.put("RadioButton.font", new Color(195, 195, 195));
-        UIManager.put("TextField.background", new Color(46, 46, 46));
-        UIManager.put("TextField.font", new Font(Font.DIALOG, Font.BOLD, 14));
-        UIManager.put("TextField.foreground", new Color(195, 195, 195));
-        //setLayout(new GridLayout(1, 3, 20, 20));
-        //getContentPane().add(new Test(this, 400, 400, 8));
-        //panel.setSize(300,300);
-        //panel.setBackground(Color.green.darker());
-        //etContentPane().add(panel);
-//        addComponentListener(new ComponentAdapter() {
-//            @Override
-//            public void componentResized(ComponentEvent e) {
-//                setSize(getSize().width, 2*getSize().width/3);
-//            }
-//        });
+
+        UIManager.put("Label.font", myFont1);
+        UIManager.put("Label.foreground", foregroundColor);
+        UIManager.put("TextField.background", backgroundColor);
+        UIManager.put("TextField.font", myFont1);
+        UIManager.put("TextField.foreground", foregroundColor);
+        UIManager.put("ComboBox.background", backgroundColor);
+        UIManager.put("ComboBox.selectionBackground", backgroundColorLight);
+        UIManager.put("RadioButton.background", backgroundColor);
+        UIManager.put("RadioButton.foreground", foregroundColor);
+        UIManager.put("RadioButton.font", myFont1);
+        UIManager.put("TitledBorder.font", myFont1);
+        UIManager.put("TitledBorder.titleColor", foregroundColor);
+        UIManager.put("Panel.background", backgroundColor);
+
         frame = this;
         SwingUtilities.invokeLater(() -> {
             getContentPane().add(new StronaStartowa(frame));
@@ -107,18 +86,44 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
         });
     }
 
+    private void loadProperties() {
+        Properties properties = new Properties();
+        InputStream input = null;
+
+        try {
+            input = Pionek.class.getResource("config.properties").openStream();
+            properties.load(input);
+
+            backgroundColor = new Color(Integer.parseInt(properties.getProperty("background.dark"), 16));
+            backgroundColorLight = new Color(Integer.parseInt(properties.getProperty("background.bright"), 16));
+            foregroundColor = new Color(Integer.parseInt(properties.getProperty("foreground"), 16));
+            myFont1 = new Font(Font.DIALOG, Font.BOLD, Integer.parseInt(properties.getProperty("myFont.size")));
+            defaultWidth = Integer.parseInt(properties.getProperty("default_width"));
+            defaultHeight = Integer.parseInt(properties.getProperty("default_height"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
     private class MyDialog extends WindowAdapter implements ZmienJezykListener {
-        JButton anulujButton;
-        JButton zapiszButton = new JButton();
-        JButton zamknijButton = new JButton();
-        JButton[] buttons;
-        String komunikat;
-        String tytul;
-        Icon alertIcon;
-        JOptionPane optionPane;
-        JDialog dialog;
-        AbstractAction anulujAction;
+        private JButton anulujButton;
+        private JButton zapiszButton = new JButton();
+        private JButton zamknijButton = new JButton();
+        private JButton[] buttons;
+        private String komunikat, tytul;
+        private Icon alertIcon;
+        private JOptionPane optionPane;
+        private JDialog dialog;
+        private AbstractAction anulujAction;
 
         MyDialog() {
             zamknijButton.addActionListener(new AbstractAction() {

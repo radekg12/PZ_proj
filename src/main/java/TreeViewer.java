@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 public class TreeViewer {
-    private Document doc, doc2;
     private HashMap<String, String> avatarsHashMap = new HashMap<>();
 
 
@@ -45,19 +44,16 @@ public class TreeViewer {
 
 
             //Document doc = builder.parse("avatars.xml");
-            String s = getClass().getResource("avatars.xml").toString();
-            String ss = "D:\\ftp\\SEMESTR_5\\PZ\\moje\\PZ_proj\\src\\main\\resources\\avatars.xml";
+            String s = getClass().getResource("avatars.xml").getPath();
             File file = new File(s);
-            File file2 = new File(ss);
-            // Document doc = builder.parse(file);
-            doc2 = builder.parse(file2);
+            Document doc = builder.parse(file);
 
-            Element root = doc2.getDocumentElement();
+            Element root = doc.getDocumentElement();
             Node x = root.getFirstChild();
             do {
                 avatarsHashMap.put(x.getChildNodes().item(0).getTextContent(), x.getChildNodes().item(1).getTextContent());
                 x = x.getNextSibling();
-            } while (x!= null);
+            } while (x != null);
 
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();

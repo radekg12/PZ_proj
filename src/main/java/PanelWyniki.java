@@ -4,22 +4,25 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class PanelWyniki extends JFrame implements ZmienJezykListener {
-    WynikiTableModel data;
-    JTable table;
-    ArrayList<Wyniki> result = new ArrayList<>();
+    private WynikiTableModel data;
+    private JTable table;
+    private ArrayList<Wyniki> result = new ArrayList<>();
+    private int defaultWidth, defaultHeight;
 
 
     public PanelWyniki(OknoGlowne frame) {
+        loadProperties();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setSize(700, 500);
+        setSize(defaultWidth, defaultHeight);
         setLayout(new GridLayout(1, 1));
         data = new WynikiTableModel(result, frame);
         table = new JTable(data);
-        table.setPreferredScrollableViewportSize(new Dimension(400, 400));
         WynikiCellRenderer renderer = new WynikiCellRenderer();
         table.setDefaultRenderer(Object.class, renderer);
         table.setRowHeight(70);
@@ -36,11 +39,6 @@ public class PanelWyniki extends JFrame implements ZmienJezykListener {
                 return result;
             }
 
-            @Override
-            protected void done() {
-                super.done();
-
-            }
         }.execute();
         frame.getMenu().addZmienJezykListener(this);
         setVisible(true);
@@ -53,6 +51,28 @@ public class PanelWyniki extends JFrame implements ZmienJezykListener {
             ResourceBundle rb = event.getRb();
             setTitle(rb.getString("score"));
         });
+    }
+
+    private void loadProperties() {
+        Properties properties = new Properties();
+        InputStream input = null;
+
+        try {
+            input = getClass().getResource("config.properties").openStream();
+            properties.load(input);
+            defaultWidth = Integer.parseInt(properties.getProperty("score.defaultWidth"));
+            defaultHeight = Integer.parseInt(properties.getProperty("score.defaultHeight"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     class WynikiCellRenderer extends DefaultTableCellRenderer {
@@ -71,14 +91,17 @@ public class PanelWyniki extends JFrame implements ZmienJezykListener {
             l.setVerticalTextPosition(JLabel.CENTER);
             if (value instanceof Gracz) {
                 l.setText(((Gracz) value).getNazwa());
-                BufferedImage img = null;
+                BufferedImage img;
                 try {
-                    img = ImageIO.read(getClass().getResource("icons/avatars/boy.png"));
+                    String name = ((Gracz) value).getAvatarName();
+                    if (name != null) {
+                        img = ImageIO.read(getClass().getResource("icons/avatars/" + name));
+                        Image icon = img.getScaledInstance(50, 50, img.getType());
+                        l.setIcon(new ImageIcon(icon));
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Image icon = img.getScaledInstance(50, 50, img.getType());
-                l.setIcon(new ImageIcon(icon));
                 if (((Gracz) value).isWon())
                     l.setForeground(Color.RED);
                 else

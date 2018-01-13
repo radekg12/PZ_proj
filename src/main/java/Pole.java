@@ -1,12 +1,11 @@
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class Pole {
-    //    private static Color jasne = new Color(189, 195, 199);
-//    private static Color ciemne = new Color(127, 140, 141);
-    private static Color jasne = new Color(62, 62, 62);
-    private static Color ciemne = new Color(39, 39, 39);
-    private static Color aktywneKolor = new Color(155, 89, 182);
-    private static Color poleBiciaKolor = new Color(192, 57, 43);
+
+    private static Color jasne, ciemne, aktywneKolor, poleBiciaKolor;
     private static int size;
     private int kolumna;
     private int wiersz;
@@ -14,6 +13,10 @@ public class Pole {
     private boolean zajete;
     private boolean aktywne;
     private boolean poleBicia;
+
+    static {
+        loadProperties();
+    }
 
     public Pole(int kolumna, int wiersz, Color color) {
         this.kolumna = kolumna;
@@ -109,5 +112,30 @@ public class Pole {
 
     public static void setSize(int size) {
         Pole.size = size;
+    }
+
+    private static void loadProperties() {
+        Properties properties = new Properties();
+        InputStream input = null;
+
+        try {
+            input = Pionek.class.getResource("config.properties").openStream();
+            properties.load(input);
+
+            jasne = new Color(Integer.parseInt(properties.getProperty("square.jasne"), 16));
+            ciemne = new Color(Integer.parseInt(properties.getProperty("square.ciemne"), 16));
+            aktywneKolor = new Color(Integer.parseInt(properties.getProperty("square.aktywneKolor"), 16));
+            poleBiciaKolor = new Color(Integer.parseInt(properties.getProperty("square.poleBiciaKolor"), 16));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

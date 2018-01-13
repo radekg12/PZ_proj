@@ -5,15 +5,17 @@ public class Gracz {
     private String nazwa;
     private ArrayList<Pionek> pionki = new ArrayList<>();
     private Image avatar;
+    private String avatarName;
     private int k;
     private boolean won = false;
 
     public Gracz() {
     }
 
-    public Gracz(String nazwa, Image avatar, int k) {
+    public Gracz(String nazwa, Image avatar, String avatarName, int k) {
         this.nazwa = nazwa;
         this.avatar = avatar;
+        this.avatarName = avatarName;
         this.k = k;
 
     }
@@ -66,6 +68,15 @@ public class Gracz {
 
     public Gracz setWon(boolean won) {
         this.won = won;
+        return this;
+    }
+
+    public String getAvatarName() {
+        return avatarName;
+    }
+
+    public Gracz setAvatarName(String avatarName) {
+        this.avatarName = avatarName;
         return this;
     }
 }

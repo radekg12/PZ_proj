@@ -3,20 +3,19 @@ import java.awt.*;
 import java.util.ResourceBundle;
 
 public class OknoGry extends JPanel implements ZmienJezykListener, WygranaListener {
-    Gra gra;
-    Gracz gracz1, gracz2;
-    PanelGracza panel1;
-    PanelGracza panel2;
-    GornaBelka gornaBelka;
-    DolnaBelka dolnaBelka;
-    String player1String, player2String;
+    private Gra gra;
+    private Gracz gracz1, gracz2;
+    private PanelGracza panel1;
+    private PanelGracza panel2;
+    private GornaBelka gornaBelka;
+    private DolnaBelka dolnaBelka;
 
-    OknoGry(OknoGlowne frame, Gracz gracz1, Gracz gracz2, int width, int height, int liczbaPol) {
+    OknoGry(OknoGlowne frame, Gracz gracz1, Gracz gracz2, int width, int height) {
         //setLayout(new GridLayout(1, 3, 20, 20));
         super(new GridBagLayout());
         this.gracz1 = gracz1;
         this.gracz2 = gracz2;
-        gra = new Gra(frame, width, height, liczbaPol, gracz1, gracz2);
+        gra = new Gra(frame, width, height, gracz1, gracz2);
         panel1 = new PanelGracza(frame, gracz1, gra);
         panel2 = new PanelGracza(frame, gracz2, gra);
         gornaBelka = new GornaBelka(frame);
@@ -29,7 +28,7 @@ public class OknoGry extends JPanel implements ZmienJezykListener, WygranaListen
     public void initGUI() {
         SwingUtilities.invokeLater(() -> {
             GridBagConstraints c = new GridBagConstraints();
-            setBackground(new Color(46, 46, 46));
+            //setBackground(new Color(46, 46, 46));
 
             c.gridx = 0;
             c.gridy = 0;
@@ -85,6 +84,7 @@ public class OknoGry extends JPanel implements ZmienJezykListener, WygranaListen
 
     @Override
     public void wygrana(WygranaEvent event) {
+        int x = 0;
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {

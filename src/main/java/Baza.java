@@ -1,5 +1,8 @@
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Properties;
 
 public class Baza {
 
@@ -8,13 +11,7 @@ public class Baza {
     private String url;
 
     public Baza() {
-        url = "jdbc:sqlserver://pzprojekt.database.windows.net:1433;database=PZ;" +
-                "user=User1;" +
-                "password=Password1;" +
-                "encrypt=true;" +
-                "trustServerCertificate=false;" +
-                "hostNameInCertificate=*.database.windows.net;" +
-                "loginTimeout=30;";
+        loadProperties();
         try {
             conn = DriverManager.getConnection(url);
             stat = conn.createStatement();
@@ -56,10 +53,10 @@ public class Baza {
         int generatedKey1 = -1, generatedKey2 = -1;
 
         String insertPlayer1 = "INSERT INTO PZ.dbo.Player (name, color, avatarName, numberOfMoves, time, winner) " +
-                "VALUES (\'" + p1.getNazwa() + "\', 'NULL', 'NULL', NULL, NULL, " + (p1.isWon() ? 1 : 0) + ")";
+                "VALUES (\'" + p1.getNazwa() + "\', NULL, \'" + p1.getAvatarName() + "\', NULL, NULL, " + (p1.isWon() ? 1 : 0) + ")";
 
         String insertPlayer2 = "INSERT INTO PZ.dbo.Player (name, color, avatarName, numberOfMoves, time, winner) " +
-                "VALUES (\'" + p2.getNazwa() + "\', 'NULL', 'NULL', NULL, NULL, " + (p2.isWon() ? 1 : 0) + ")";
+                "VALUES (\'" + p2.getNazwa() + "\', NULL, \'" + p2.getAvatarName() + "\', NULL, NULL, " + (p2.isWon() ? 1 : 0) + ")";
 
         stat.execute(insertPlayer1, Statement.RETURN_GENERATED_KEYS);
         rs = stat.getGeneratedKeys();
@@ -110,7 +107,29 @@ public class Baza {
             player = new Gracz();
             player.setNazwa(rs.getString("name"));
             player.setWon(rs.getInt("winner") == 1);
+            player.setAvatarName(rs.getString("avatarName"));
         }
         return player;
+    }
+
+    private void loadProperties() {
+        Properties properties = new Properties();
+        InputStream input = null;
+
+        try {
+            input = getClass().getResource("config.properties").openStream();
+            properties.load(input);
+            url = properties.getProperty("dbURL");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

@@ -1,5 +1,3 @@
-import java.lang.reflect.Field;
-
 public class Wyniki {
     private Gracz player1;
     private String date;

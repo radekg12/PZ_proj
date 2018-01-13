@@ -11,12 +11,11 @@ public class StronaStartowa extends JPanel implements ZmienJezykListener {
 
     public StronaStartowa(OknoGlowne frame) {
         this.frame = frame;
-        setBackground(Color.blue);
+        //setBackground(Color.blue);
         notowania = new PanelNotowania(frame);
         startAction = new AbstractAction(null, new ImageIcon(getClass().getResource("icons/start_24.png"))) {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                frame.zmianaOkna(new OknoGry(frame, 300, 300, 8));
                 frame.zmianaOkna(new PanelNowaGra(frame));
             }
         };

@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.awt.*;
 import java.util.ResourceBundle;
 
 public class DolnaBelka extends JPanel implements ZmienKolejListener, ZmienJezykListener, WygranaListener {
@@ -21,8 +20,6 @@ public class DolnaBelka extends JPanel implements ZmienKolejListener, ZmienJezyk
 
     public void initGUI() {
         SwingUtilities.invokeLater(() -> {
-            setBackground(new Color(46, 46, 46));
-//            setBackground(new Color(28, 122, 242));
             add(label);
         });
     }

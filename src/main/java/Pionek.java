@@ -2,19 +2,24 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class Pionek {
     private int x;
     private int y;
+    //TODO
     private static int size = 50;
     private int k;
     private Color kolor;
     private Color aktywnyKolor;
-    static private Color ciemny = new Color(22, 160, 133);
-    static private Color ciemnyAktywny = new Color(26, 188, 156);
-    static private Color jasny = new Color(211, 84, 0);
-    static private Color jasnyAktywny = new Color(230, 126, 34);
-    static private Color kolorBicia = new Color(191, 56, 44);
+
+    static private Color ciemny;
+    static private Color ciemnyAktywny;
+    static private Color jasny;
+    static private Color jasnyAktywny;
+    static private Color kolorBicia;
+
     private RodzajPionka rodzajPionka;
     private static BufferedImage korona;
 
@@ -22,6 +27,7 @@ public class Pionek {
     private boolean mozeBic;
 
     static {
+        loadProperties();
         try {
             korona = ImageIO.read(Pionek.class.getResource("icons/korona-100.png"));
         } catch (IOException e) {
@@ -184,5 +190,31 @@ public class Pionek {
 
     public static void setKolorBicia(Color kolorBicia) {
         Pionek.kolorBicia = kolorBicia;
+    }
+
+    private static void loadProperties() {
+        Properties properties = new Properties();
+        InputStream input = null;
+
+        try {
+            input = Pionek.class.getResource("config.properties").openStream();
+            properties.load(input);
+
+            jasny = new Color(Integer.parseInt(properties.getProperty("pionek.jasny"), 16));
+            jasnyAktywny = new Color(Integer.parseInt(properties.getProperty("pionek.jasnyAktywny"), 16));
+            ciemny = new Color(Integer.parseInt(properties.getProperty("pionek.ciemny"), 16));
+            ciemnyAktywny = new Color(Integer.parseInt(properties.getProperty("pionek.ciemnyAktywny"), 16));
+            kolorBicia = new Color(Integer.parseInt(properties.getProperty("pionek.kolorBicia"), 16));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
