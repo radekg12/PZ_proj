@@ -1,4 +1,7 @@
+import java.util.logging.Logger;
+
 public class WynikGra {
+    //private static final Logger LOGGER = Logger.getLogger(WynikGra.class.getSimpleName(), "LogsMessages");
     private String date, player1ID, player2ID;
 
     public WynikGra(String date, String player1ID, String player2ID) {

@@ -1,4 +1,7 @@
+import java.util.logging.Logger;
+
 public class Wyniki {
+    private static final Logger LOGGER = Logger.getLogger(Wyniki.class.getSimpleName(), "LogsMessages");
     private Gracz player1;
     private String date;
     private Gracz player2;
@@ -15,6 +18,7 @@ public class Wyniki {
         try {
             res = getClass().getDeclaredFields()[columnIndex].get(this);
         } catch (IllegalAccessException e) {
+            //TODO log
             e.printStackTrace();
         }
         return res;

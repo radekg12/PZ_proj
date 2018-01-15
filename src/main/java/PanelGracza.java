@@ -7,8 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaListener {
+    private static final Logger LOGGER = Logger.getLogger(PanelGracza.class.getSimpleName(), "LogsMessages");
     private JButton button = new JButton("usun");
     private Gracz gracz;
     private boolean aktywny;
@@ -39,7 +42,7 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
         try {
             confetti = ImageIO.read(new File(String.valueOf(getClass().getResource("icons/won_70.png")).replace("file:/", "")));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "image.open", e);
         }
         initGUI();
     }
@@ -73,28 +76,26 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
             won = true;
             setBackground(color);
             repaint();
-            System.out.println("Wygrana - PanelGracza");
         }
     }
 
     private void loadProperties() {
         Properties properties = new Properties();
         InputStream input = null;
-
+        String propertiesName = "config.properties";
         try {
-            input = Pionek.class.getResource("config.properties").openStream();
+            input = getClass().getResource(propertiesName).openStream();
             properties.load(input);
-
-            color = new Color(Integer.parseInt(properties.getProperty("background.bright"), 16));
-            activeColor = new Color(Integer.parseInt(properties.getProperty("background.bright2"), 16));
+            color = Color.decode(properties.getProperty("background.bright"));
+            activeColor = Color.decode(properties.getProperty("background.bright2"));
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "properties.open", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "properties.close", e);
                 }
             }
         }

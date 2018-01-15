@@ -4,12 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Pionek {
+    private static final Logger LOGGER = Logger.getLogger(Pionek.class.getSimpleName(), "LogsMessages");
     private int x;
     private int y;
-    //TODO
-    private static int size = 50;
+    private static int size;
     private int k;
     private Color kolor;
     private Color aktywnyKolor;
@@ -31,7 +33,7 @@ public class Pionek {
         try {
             korona = ImageIO.read(Pionek.class.getResource("icons/korona-100.png"));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "image.open", e);
         }
     }
 
@@ -195,24 +197,23 @@ public class Pionek {
     private static void loadProperties() {
         Properties properties = new Properties();
         InputStream input = null;
-
+        String propertiesName = "config.properties";
         try {
-            input = Pionek.class.getResource("config.properties").openStream();
+            input = Pionek.class.getResource(propertiesName).openStream();
             properties.load(input);
-
-            jasny = new Color(Integer.parseInt(properties.getProperty("pionek.jasny"), 16));
-            jasnyAktywny = new Color(Integer.parseInt(properties.getProperty("pionek.jasnyAktywny"), 16));
-            ciemny = new Color(Integer.parseInt(properties.getProperty("pionek.ciemny"), 16));
-            ciemnyAktywny = new Color(Integer.parseInt(properties.getProperty("pionek.ciemnyAktywny"), 16));
-            kolorBicia = new Color(Integer.parseInt(properties.getProperty("pionek.kolorBicia"), 16));
+            jasny = Color.decode(properties.getProperty("pionek.jasny"));
+            jasnyAktywny = Color.decode(properties.getProperty("pionek.jasnyAktywny"));
+            ciemny = Color.decode(properties.getProperty("pionek.ciemny"));
+            ciemnyAktywny = Color.decode(properties.getProperty("pionek.ciemnyAktywny"));
+            kolorBicia = Color.decode(properties.getProperty("pionek.kolorBicia"));
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "properties.open", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "properties.close", e);
                 }
             }
         }

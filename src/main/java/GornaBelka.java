@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class GornaBelka extends JPanel implements ZmienJezykListener {
+    //private static final Logger LOGGER = Logger.getLogger(GornaBelka.class.getSimpleName(), "LogsMessages");
     private JLabel label;
 
     public GornaBelka(OknoGlowne frame) {

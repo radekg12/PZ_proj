@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Gra extends JComponent{
+public class Gra extends JComponent {
+    private static final Logger LOGGER = Logger.getLogger(Gra.class.getSimpleName(), "LogsMessages");
     private OknoGlowne frame;
     private int liczbaPol;
     private Pionek aktywny;
@@ -22,11 +24,9 @@ public class Gra extends JComponent{
     private ArrayList<WygranaListener> wygranaListeners = new ArrayList<>();
 
 
-    public Gra(OknoGlowne frame, int width, int height, Gracz gracz1, Gracz gracz2) {
-//        setPreferredSize(new Dimension(width, height));
-        //setPreferredSize(new Dimension(400, 400));
+    public Gra(OknoGlowne frame, Gracz gracz1, Gracz gracz2) {
+        loadProperties();
         this.frame = frame;
-        this.liczbaPol = liczbaPol;
         //TODO
         //Pionek.setSize(Math.min(width, height) / liczbaPol);
         //Pole.setSize(Math.min(width, height) / liczbaPol);
@@ -36,9 +36,10 @@ public class Gra extends JComponent{
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                Pionek.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
-                Pole.setSize(Math.min(getWidth() / liczbaPol, getHeight() / liczbaPol));
-                int x = Math.min(getWidth(), getHeight());
+                int x = Math.min(getWidth(), getHeight()) / liczbaPol;
+                Pionek.setSize(x);
+                Pole.setSize(x);
+                repaint();
             }
         });
 //        aktualnyPrzeciwnik = new Gracz(player1String, -1);
@@ -73,11 +74,11 @@ public class Gra extends JComponent{
     }
 
     private void ustawPionki() {
-        for (int j = 0; j < 3; j++)
+        for (int j = 0; j < liczbaPol / 2 - 1; j++)
             for (int i = 0; i < liczbaPol; i++)
                 if ((i + j) % 2 == 1) dodajPionek(i, j, aktualnyPrzeciwnik);
 
-        for (int j = 1; j <= 3; j++)
+        for (int j = 1; j <= liczbaPol / 2 - 1; j++)
             for (int i = 1; i <= liczbaPol; i++)
                 if ((i + j) % 2 == 1) dodajPionek(liczbaPol - i, liczbaPol - j, aktualnyGracz);
 
@@ -138,7 +139,7 @@ public class Gra extends JComponent{
         }
     }
 
-    //TODO rozbić metodę
+    //TODO rozbić metodę?
     private void sprRuch() {
     }
 
@@ -327,8 +328,6 @@ public class Gra extends JComponent{
         sprCzyDamka(aktywny);
         aktywny = null;
         zmienKolej();
-        //repaint(); //
-        System.out.println("ruch");
         repaint();
     }
 
@@ -350,12 +349,9 @@ public class Gra extends JComponent{
 
     private synchronized void fireWygranaEvent() {
         WygranaEvent event = new WygranaEvent(this, aktualnyPrzeciwnik, aktualnyGracz);
-        int i = 0;
         for (WygranaListener l : wygranaListeners) {
             l.wygrana(event);
-            i++;
         }
-        System.out.println("fire do: " + i);
     }
 
     public synchronized void addWygranaListener(WygranaListener l) {
@@ -374,19 +370,20 @@ public class Gra extends JComponent{
     private void loadProperties() {
         Properties properties = new Properties();
         InputStream input = null;
-
+        String propertiesName = "config.properties";
         try {
-            input = getClass().getResource("config.properties").openStream();
+            input = getClass().getResource(propertiesName).openStream();
+
             properties.load(input);
-            liczbaPol = Integer.parseInt(properties.getProperty("liczbaPol"));
+            liczbaPol = Integer.parseInt(properties.getProperty("plansza.liczbaPol"));
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "properties.open", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "properties.close", e);
                 }
             }
         }

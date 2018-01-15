@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class DolnaBelka extends JPanel implements ZmienKolejListener, ZmienJezykListener, WygranaListener {
+    //private static final Logger LOGGER = Logger.getLogger(DolnaBelka.class.getSimpleName(), "LogsMessages");
     private JLabel label;
     private String turnString;
     private String winString;
@@ -48,6 +50,5 @@ public class DolnaBelka extends JPanel implements ZmienKolejListener, ZmienJezyk
     public void wygrana(WygranaEvent event) {
         SwingUtilities.invokeLater(() -> label.setText(event.getWygrany().getNazwa() + winString + " ! ! ! "));
         repaint();
-        System.out.println("Wygrana - DolnaBelka");
     }
 }

@@ -3,8 +3,10 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class PanelNowaGra extends JPanel implements ZmienJezykListener {
+    //private static final Logger LOGGER = Logger.getLogger(PanelNowaGra.class.getSimpleName(), "LogsMessages");
     private OknoGlowne frame;
     private JLabel label1, label2;
     private JTextField textField1, textField2;
@@ -24,6 +26,7 @@ public class PanelNowaGra extends JPanel implements ZmienJezykListener {
         label1 = new JLabel();
         label2 = new JLabel();
         textField1 = new JTextField();
+        //textField1.setBorder(BorderFactory.createEmptyBorder());
         textField2 = new JTextField();
 
         startAction = new AbstractAction(null, new ImageIcon(getClass().getResource("icons/start_24.png"))) {
@@ -31,8 +34,8 @@ public class PanelNowaGra extends JPanel implements ZmienJezykListener {
             public void actionPerformed(ActionEvent e) {
                 Gracz gracz1 = new Gracz(textField1.getText(), customComboBox1.getSelectedImage(), customComboBox1.getSelectedImageName(), -1);
                 Gracz gracz2 = new Gracz(textField2.getText(), customComboBox2.getSelectedImage(), customComboBox2.getSelectedImageName(), 1);
-                //TODO
-                frame.zmianaOkna(new OknoGry(frame, gracz1, gracz2, 300, 300));
+                frame.zmianaOkna(new OknoGry(frame, gracz1, gracz2));
+
             }
         };
         backAction = new AbstractAction(null, new ImageIcon(getClass().getResource("icons/back_24.png"))) {

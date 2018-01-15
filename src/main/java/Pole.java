@@ -2,9 +2,11 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Pole {
-
+    private static final Logger LOGGER = Logger.getLogger(Pole.class.getSimpleName(), "LogsMessages");
     private static Color jasne, ciemne, aktywneKolor, poleBiciaKolor;
     private static int size;
     private int kolumna;
@@ -117,23 +119,24 @@ public class Pole {
     private static void loadProperties() {
         Properties properties = new Properties();
         InputStream input = null;
+        String propertiesName = "config.properties";
 
         try {
-            input = Pionek.class.getResource("config.properties").openStream();
+            input = Pole.class.getResource(propertiesName).openStream();
             properties.load(input);
 
-            jasne = new Color(Integer.parseInt(properties.getProperty("square.jasne"), 16));
-            ciemne = new Color(Integer.parseInt(properties.getProperty("square.ciemne"), 16));
-            aktywneKolor = new Color(Integer.parseInt(properties.getProperty("square.aktywneKolor"), 16));
-            poleBiciaKolor = new Color(Integer.parseInt(properties.getProperty("square.poleBiciaKolor"), 16));
+            jasne = Color.decode(properties.getProperty("square.jasne"));
+            ciemne = Color.decode(properties.getProperty("square.ciemne"));
+            aktywneKolor = Color.decode(properties.getProperty("square.aktywneKolor"));
+            poleBiciaKolor = Color.decode(properties.getProperty("square.poleBiciaKolor"));
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "properties.open", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "properties.close", e);
                 }
             }
         }

@@ -2,8 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 
 public class StronaStartowa extends JPanel implements ZmienJezykListener {
+    //private static final Logger LOGGER = Logger.getLogger(StronaStartowa.class.getSimpleName(), "LogsMessages");
     private JButton button1, button2;
     private AbstractAction startAction;
     private OknoGlowne frame;
@@ -11,7 +13,6 @@ public class StronaStartowa extends JPanel implements ZmienJezykListener {
 
     public StronaStartowa(OknoGlowne frame) {
         this.frame = frame;
-        //setBackground(Color.blue);
         notowania = new PanelNotowania(frame);
         startAction = new AbstractAction(null, new ImageIcon(getClass().getResource("icons/start_24.png"))) {
             @Override

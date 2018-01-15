@@ -8,13 +8,15 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PanelWyniki extends JFrame implements ZmienJezykListener {
+    private static final Logger LOGGER = Logger.getLogger(PanelWyniki.class.getSimpleName(), "LogsMessages");
     private WynikiTableModel data;
     private JTable table;
     private ArrayList<Wyniki> result = new ArrayList<>();
-    private int defaultWidth, defaultHeight;
-
+    private int defaultWidth, defaultHeight, avatarSize;
 
     public PanelWyniki(OknoGlowne frame) {
         loadProperties();
@@ -25,7 +27,8 @@ public class PanelWyniki extends JFrame implements ZmienJezykListener {
         table = new JTable(data);
         WynikiCellRenderer renderer = new WynikiCellRenderer();
         table.setDefaultRenderer(Object.class, renderer);
-        table.setRowHeight(70);
+        //TODO
+        table.setRowHeight(avatarSize + 20);
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane);
 
@@ -35,7 +38,6 @@ public class PanelWyniki extends JFrame implements ZmienJezykListener {
                 Baza baza = new Baza();
                 baza.sprawdzWyniki(data);
                 baza.closeConnection();
-                System.out.println("Pobrano wyniki!!!");
                 return result;
             }
 
@@ -56,20 +58,21 @@ public class PanelWyniki extends JFrame implements ZmienJezykListener {
     private void loadProperties() {
         Properties properties = new Properties();
         InputStream input = null;
-
+        String propertiesName = "config.properties";
         try {
-            input = getClass().getResource("config.properties").openStream();
+            input = getClass().getResource(propertiesName).openStream();
             properties.load(input);
             defaultWidth = Integer.parseInt(properties.getProperty("score.defaultWidth"));
             defaultHeight = Integer.parseInt(properties.getProperty("score.defaultHeight"));
+            avatarSize = Integer.parseInt(properties.getProperty("score.avatarSize"));
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "properties.open", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "properties.close", e);
                 }
             }
         }
@@ -96,13 +99,14 @@ public class PanelWyniki extends JFrame implements ZmienJezykListener {
                     String name = ((Gracz) value).getAvatarName();
                     if (name != null) {
                         img = ImageIO.read(getClass().getResource("icons/avatars/" + name));
-                        Image icon = img.getScaledInstance(50, 50, img.getType());
+                        Image icon = img.getScaledInstance(avatarSize, avatarSize, img.getType());
                         l.setIcon(new ImageIcon(icon));
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "image.open", e);
                 }
                 if (((Gracz) value).isWon())
+                    //TODO
                     l.setForeground(Color.RED);
                 else
                     l.setForeground(Color.BLACK);
@@ -110,6 +114,7 @@ public class PanelWyniki extends JFrame implements ZmienJezykListener {
 
             if (value instanceof String) {
                 l.setText(((String) value).split(" ")[0]);
+                //TODO
                 l.setForeground(Color.GREEN);
                 l.setIcon(null);
                 l.setHorizontalAlignment(JLabel.CENTER);

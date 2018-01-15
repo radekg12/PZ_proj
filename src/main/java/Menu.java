@@ -3,8 +3,11 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Menu extends JMenuBar implements ZmienJezykListener {
+    private static final Logger LOGGER = Logger.getLogger(Menu.class.getSimpleName(), "LogsMessages");
     private OknoGlowne frame;
     private JMenu file, edit, view, changeLook, changeLanguage;
     private JMenuItem look1, look2, look3, save, exit, chPL, chEN, score;
@@ -166,7 +169,7 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
             try {
                 UIManager.setLookAndFeel(plaf);
             } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException | IllegalAccessException e1) {
-                e1.printStackTrace();
+                LOGGER.log(Level.WARNING,"plaf.change" , e);
             }
             SwingUtilities.updateComponentTreeUI(frame);
         }

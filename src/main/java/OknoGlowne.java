@@ -8,8 +8,11 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class OknoGlowne extends JFrame implements ZmienJezykListener {
+    private Logger logger;
     private int defaultWidth, defaultHeight;
     private Menu menu;
     private String gameName;
@@ -20,7 +23,8 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
 
 
     public OknoGlowne() {
-
+        new LoggerConfiguration();
+        logger = Logger.getLogger(OknoGlowne.class.getSimpleName(), "LogsMessages");
         loadProperties();
         image = new ImageIcon(getClass().getResource("icons/myLogo.png")).getImage();
         setSize(defaultWidth, defaultHeight);
@@ -89,32 +93,33 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
     private void loadProperties() {
         Properties properties = new Properties();
         InputStream input = null;
+        String propertiesName = "config.properties";
 
         try {
-            input = Pionek.class.getResource("config.properties").openStream();
+            input = getClass().getResource(propertiesName).openStream();
             properties.load(input);
 
-            backgroundColor = new Color(Integer.parseInt(properties.getProperty("background.dark"), 16));
-            backgroundColorLight = new Color(Integer.parseInt(properties.getProperty("background.bright"), 16));
-            foregroundColor = new Color(Integer.parseInt(properties.getProperty("foreground"), 16));
+            backgroundColor = Color.decode(properties.getProperty("background.dark"));
+            backgroundColorLight = Color.decode(properties.getProperty("background.bright"));
+            foregroundColor = Color.decode(properties.getProperty("foreground"));
             myFont1 = new Font(Font.DIALOG, Font.BOLD, Integer.parseInt(properties.getProperty("myFont.size")));
             defaultWidth = Integer.parseInt(properties.getProperty("default_width"));
             defaultHeight = Integer.parseInt(properties.getProperty("default_height"));
         } catch (IOException ex) {
-            ex.printStackTrace();
+            logger.log(Level.WARNING, "properties.open", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                    logger.log(Level.WARNING, "properties.close", e);                }
             }
         }
     }
 
 
     private class MyDialog extends WindowAdapter implements ZmienJezykListener {
+        //TODO ?????
         private JButton anulujButton;
         private JButton zapiszButton = new JButton();
         private JButton zamknijButton = new JButton();
@@ -129,7 +134,7 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
             zamknijButton.addActionListener(new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.exit(1);
+                    System.exit(0);
                 }
             });
             MyDialog okno = this;

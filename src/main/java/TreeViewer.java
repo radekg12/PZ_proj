@@ -11,8 +11,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TreeViewer {
+    private static final Logger LOGGER = Logger.getLogger(TreeViewer.class.getSimpleName(), "LogsMessages");
     private HashMap<String, String> avatarsHashMap = new HashMap<>();
 
 
@@ -56,9 +59,9 @@ public class TreeViewer {
             } while (x != null);
 
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING,"xml.open" ,e );
         }
-        System.out.println("zakonczoinoXML");
+        LOGGER.info("xml.openInfo");
     }
 
     public HashMap<String, String> getAvatarsHashMap() {

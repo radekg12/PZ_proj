@@ -9,12 +9,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AvatarComboBox extends JPanel {
+    private static final Logger LOGGER = Logger.getLogger(AvatarComboBox.class.getSimpleName(), "LogsMessages");
     private ArrayList<Image> images = new ArrayList<>();
     private ArrayList<String> imageIndex = new ArrayList<>();
     private ArrayList<String> imageIndex2 = new ArrayList<>();
-    private JComboBox avatarList;
+    private JComboBox comboBox;
     private Color color, selectedColor;
     private TreeViewer treeViewer;
     private int avatarSize;
@@ -22,12 +25,13 @@ public class AvatarComboBox extends JPanel {
 
     public AvatarComboBox() {
         loadProperties();
-        avatarList = new JComboBox();
+        comboBox = new JComboBox();
         setOpaque(false);
         ComboBoxRenderer renderer = new ComboBoxRenderer();
         renderer.setPreferredSize(new Dimension(avatarSize, avatarSize));
-        avatarList.setRenderer(renderer);
-        avatarList.setMaximumRowCount(3);
+        comboBox.setRenderer(renderer);
+        comboBox.setMaximumRowCount(3);
+        comboBox.setBorder(BorderFactory.createEmptyBorder());
 
         new SwingWorker<Void, Void>() {
             @Override
@@ -46,18 +50,13 @@ public class AvatarComboBox extends JPanel {
                 int i = 0;
                 for (File f : file.listFiles()) {
                     try {
-
                         String a = f.getName();
-                        String b = f.getPath();
-
                         img = ImageIO.read(f);
-
                         images.add(img.getScaledInstance(avatarSize, avatarSize, img.getType()));
                         imageIndex.add(a);
                         imageIndex2.add(a);
-
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        LOGGER.log(Level.WARNING, "image.open", e);
                     }
                     publish(imageIndex);
                 }
@@ -69,21 +68,21 @@ public class AvatarComboBox extends JPanel {
                 for (ArrayList<String> c : chunks) {
                     String array[] = new String[c.size()];
                     array = c.toArray(array);
-                    avatarList.setModel(new DefaultComboBoxModel(array));
+                    comboBox.setModel(new DefaultComboBoxModel(array));
                     revalidate();
                 }
             }
         }.execute();
-        avatarList.getEditor().getEditorComponent().setBackground(color);
-        SwingUtilities.invokeLater(() -> add(avatarList));
+        comboBox.getEditor().getEditorComponent().setBackground(color);
+        SwingUtilities.invokeLater(() -> add(comboBox));
     }
 
     public Image getSelectedImage() {
-        return images.get(imageIndex.indexOf(imageIndex2.get(avatarList.getSelectedIndex())));
+        return images.get(imageIndex.indexOf(imageIndex2.get(comboBox.getSelectedIndex())));
     }
 
     public String getSelectedImageName() {
-        return imageIndex2.get(avatarList.getSelectedIndex());
+        return imageIndex2.get(comboBox.getSelectedIndex());
     }
 
     public void filter(String s) {
@@ -92,28 +91,27 @@ public class AvatarComboBox extends JPanel {
         imageIndex.stream().filter(x -> hashMap.get(x.split("\\.")[0]).equals(s)).forEach(i -> imageIndex2.add(i));
         String[] array11 = new String[imageIndex2.size()];
         array11 = imageIndex2.toArray(array11);
-        avatarList.setModel(new DefaultComboBoxModel<>(array11));
+        comboBox.setModel(new DefaultComboBoxModel<>(array11));
     }
 
     private void loadProperties() {
         Properties properties = new Properties();
         InputStream input = null;
-
+        String propertiesName = "config.properties";
         try {
-            input = Pionek.class.getResource("config.properties").openStream();
+            input = Pionek.class.getResource(propertiesName).openStream();
             properties.load(input);
-
-            color = new Color(Integer.parseInt(properties.getProperty("background.dark"), 16));
-            selectedColor = new Color(Integer.parseInt(properties.getProperty("background.bright"), 16));
+            color = Color.decode(properties.getProperty("background.dark"));
+            selectedColor = Color.decode(properties.getProperty("background.bright"));
             avatarSize = Integer.parseInt(properties.getProperty("avatar.size"));
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "properties.open", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "properties.close", e);
                 }
             }
         }

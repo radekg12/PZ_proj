@@ -1,7 +1,9 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class Gracz {
+    //private static final Logger LOGGER = Logger.getLogger(Gracz.class.getSimpleName(), "LogsMessages");
     private String nazwa;
     private ArrayList<Pionek> pionki = new ArrayList<>();
     private Image avatar;

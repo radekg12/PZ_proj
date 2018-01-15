@@ -3,9 +3,11 @@ import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Baza {
-
+    private static final Logger LOGGER = Logger.getLogger(Baza.class.getSimpleName(), "LogsMessages");
     private Connection conn;
     private Statement stat;
     private String url;
@@ -15,9 +17,9 @@ public class Baza {
         try {
             conn = DriverManager.getConnection(url);
             stat = conn.createStatement();
+            LOGGER.info("db.openInfo");
         } catch (SQLException e) {
-            System.out.println("Problem z otwarciem polaczenia");
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "db.open", e);
         }
     }
 
@@ -25,10 +27,9 @@ public class Baza {
     public void closeConnection() {
         try {
             conn.close();
-            System.out.println("Połączono z bazą");
+            LOGGER.info("db.closeInfo");
         } catch (SQLException e) {
-            System.err.println("Problem z zamknieciem polaczenia");
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "db.close", e);
         }
     }
 
@@ -72,8 +73,7 @@ public class Baza {
         String insertGame = "INSERT INTO PZ.dbo.Game (id_player1, id_player2, date)" +
                 "VALUES (" + generatedKey1 + ", " + generatedKey2 + ", GETDATE() )";
         stat.execute(insertGame);
-        System.out.println("Zapisano wynik do bazy");
-
+        LOGGER.info("db.saveInfo");
     }
 
     public void sprawdzWyniki(WynikiTableModel data) throws SQLException {
@@ -97,6 +97,7 @@ public class Baza {
             data.addWynik(new Wyniki(p1, p2, wg.getDate()));
             data.fireTableDataChanged();
         }
+        LOGGER.info("db.readInfo");
     }
 
     public Gracz getPlayer(String id) throws SQLException {
@@ -115,19 +116,19 @@ public class Baza {
     private void loadProperties() {
         Properties properties = new Properties();
         InputStream input = null;
-
+        String propertiesName = "config.properties";
         try {
-            input = getClass().getResource("config.properties").openStream();
+            input = getClass().getResource(propertiesName).openStream();
             properties.load(input);
             url = properties.getProperty("dbURL");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "properties.open", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "properties.close", e);
                 }
             }
         }

@@ -5,8 +5,11 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PanelNotowania extends JComponent implements ZmienJezykListener {
+    private Logger LOGGER = Logger.getLogger(PanelNotowania.class.getSimpleName(), "LogsMessages");
     private JLabel tytul, date, not1;
     private String base, res;
 
@@ -27,10 +30,11 @@ public class PanelNotowania extends JComponent implements ZmienJezykListener {
                     xxx = client.getResponse(base);
                     Method method = xxx.getRates().getClass().getMethod("get" + res);
                     not1.setText("1 " + base + " = " + method.invoke(xxx.getRates()) + " " + res);
+                    //TODO
                     System.out.println("1" + xxx.getBase() + " = " + method.invoke(xxx.getRates()) + " " + res);
                     date.setText(xxx.getDate());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "rest.open", e);
                 }
 
                 return null;
@@ -59,20 +63,20 @@ public class PanelNotowania extends JComponent implements ZmienJezykListener {
     private void loadProperties() {
         Properties properties = new Properties();
         InputStream input = null;
-
+        String propertiesName = "config.properties";
         try {
-            input = getClass().getResource("config.properties").openStream();
+            input = getClass().getResource(propertiesName).openStream();
             properties.load(input);
             base = properties.getProperty("currency.in");
             res = properties.getProperty("currency.out");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.WARNING, "properties.open", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.WARNING, "properties.close", e);
                 }
             }
         }
