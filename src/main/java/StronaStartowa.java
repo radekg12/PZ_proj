@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 public class StronaStartowa extends JPanel implements ZmienJezykListener {
     //private static final Logger LOGGER = Logger.getLogger(StronaStartowa.class.getSimpleName(), "LogsMessages");

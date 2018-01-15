@@ -1,9 +1,11 @@
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WynikiTableModel extends AbstractTableModel {
-    //private static final Logger LOGGER = Logger.getLogger(WynikiTableModel.class.getSimpleName(), "LogsMessages");
+    private static final Logger LOGGER = Logger.getLogger(WynikiTableModel.class.getSimpleName(), "LogsMessages");
     private ArrayList<Wyniki> wynikis;
     private ResourceBundle rb;
 
@@ -31,7 +33,13 @@ public class WynikiTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return wynikis.get(rowIndex).getColumnValue(columnIndex);
+        Object value = null;
+        try {
+            value = wynikis.get(rowIndex).getColumnValue(columnIndex);
+        } catch (IllegalAccessException e) {
+            LOGGER.log(Level.WARNING, "score.columnValue", e);
+        }
+        return value;
     }
 
     @Override

@@ -59,7 +59,7 @@ public class TreeViewer {
             } while (x != null);
 
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            LOGGER.log(Level.WARNING,"xml.open" ,e );
+            LOGGER.log(Level.WARNING, "xml.open", e);
         }
         LOGGER.info("xml.openInfo");
     }

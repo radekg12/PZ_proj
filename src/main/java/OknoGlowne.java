@@ -112,7 +112,8 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    logger.log(Level.WARNING, "properties.close", e);                }
+                    logger.log(Level.WARNING, "properties.close", e);
+                }
             }
         }
     }

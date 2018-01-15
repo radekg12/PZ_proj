@@ -3,7 +3,6 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 public class PanelNowaGra extends JPanel implements ZmienJezykListener {
     //private static final Logger LOGGER = Logger.getLogger(PanelNowaGra.class.getSimpleName(), "LogsMessages");

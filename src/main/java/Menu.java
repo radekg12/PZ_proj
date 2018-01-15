@@ -169,7 +169,7 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
             try {
                 UIManager.setLookAndFeel(plaf);
             } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException | IllegalAccessException e1) {
-                LOGGER.log(Level.WARNING,"plaf.change" , e);
+                LOGGER.log(Level.WARNING, "plaf.change", e);
             }
             SwingUtilities.updateComponentTreeUI(frame);
         }

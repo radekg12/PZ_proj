@@ -30,13 +30,11 @@ public class PanelNotowania extends JComponent implements ZmienJezykListener {
                     xxx = client.getResponse(base);
                     Method method = xxx.getRates().getClass().getMethod("get" + res);
                     not1.setText("1 " + base + " = " + method.invoke(xxx.getRates()) + " " + res);
-                    //TODO
-                    System.out.println("1" + xxx.getBase() + " = " + method.invoke(xxx.getRates()) + " " + res);
                     date.setText(xxx.getDate());
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, "rest.open", e);
                 }
-
+                LOGGER.info("rest.openInfo");
                 return null;
             }
         }.execute();

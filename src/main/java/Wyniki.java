@@ -1,5 +1,4 @@
 public class Wyniki {
-
     private Gracz player1;
     private String date;
     private Gracz player2;
@@ -11,15 +10,8 @@ public class Wyniki {
     }
 
 
-    public Object getColumnValue(int columnIndex) {
-        Object res = null;
-        try {
-            res = getClass().getDeclaredFields()[columnIndex].get(this);
-        } catch (IllegalAccessException e) {
-            //TODO log
-            e.printStackTrace();
-        }
-        return res;
+    public Object getColumnValue(int columnIndex) throws IllegalAccessException {
+        return getClass().getDeclaredFields()[columnIndex].get(this);
     }
 
 

@@ -1,6 +1,5 @@
 import javax.swing.*;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 public class DolnaBelka extends JPanel implements ZmienKolejListener, ZmienJezykListener, WygranaListener {
     //private static final Logger LOGGER = Logger.getLogger(DolnaBelka.class.getSimpleName(), "LogsMessages");

@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 public class OknoGry extends JPanel implements WygranaListener {
     //private static final Logger LOGGER = Logger.getLogger(OknoGry.class.getSimpleName(), "LogsMessages");
@@ -16,7 +14,7 @@ public class OknoGry extends JPanel implements WygranaListener {
     OknoGry(OknoGlowne frame, Gracz gracz1, Gracz gracz2) {
         //setLayout(new GridLayout(1, 3, 20, 20));
         super(new GridBagLayout());
-        this.frame=frame;
+        this.frame = frame;
         this.gracz1 = gracz1;
         this.gracz2 = gracz2;
         gra = new Gra(frame, gracz1, gracz2);
