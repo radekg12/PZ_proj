@@ -1,7 +1,5 @@
-import java.util.logging.Logger;
-
 public class Wyniki {
-    private static final Logger LOGGER = Logger.getLogger(Wyniki.class.getSimpleName(), "LogsMessages");
+
     private Gracz player1;
     private String date;
     private Gracz player2;

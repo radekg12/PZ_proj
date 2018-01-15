@@ -1,10 +1,9 @@
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 public class WynikiTableModel extends AbstractTableModel {
-    //private static final Logger LOGGER = Logger.getLogger(WynikiTableModel.class.getSimpleName(), "IllegalAccessException");
+    //private static final Logger LOGGER = Logger.getLogger(WynikiTableModel.class.getSimpleName(), "LogsMessages");
     private ArrayList<Wyniki> wynikis;
     private ResourceBundle rb;
 
