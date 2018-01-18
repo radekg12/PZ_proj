@@ -1,13 +1,13 @@
 package pl.edu.wat.wcy.pz.score;
 
-import pl.edu.wat.wcy.pz.checkers.Gracz;
+import pl.edu.wat.wcy.pz.checkers.Player;
 
-public class Wyniki {
-    private Gracz player1;
+public class Score {
+    private Player player1;
     private String date;
-    private Gracz player2;
+    private Player player2;
 
-    public Wyniki(Gracz player1, Gracz player2, String date) {
+    public Score(Player player1, Player player2, String date) {
         this.player1 = player1;
         this.player2 = player2;
         this.date = date;
@@ -20,27 +20,27 @@ public class Wyniki {
 
 
     public static int getFieldsCount() {
-        return Wyniki.class.getDeclaredFields().length;
+        return Score.class.getDeclaredFields().length;
     }
 
     public static String getColumnName(int columnIndex) {
-        return Wyniki.class.getDeclaredFields()[columnIndex].getName();
+        return Score.class.getDeclaredFields()[columnIndex].getName();
     }
 
-    public Gracz getPlayer1() {
+    public Player getPlayer1() {
         return player1;
     }
 
-    public Wyniki setPlayer1(Gracz player1) {
+    public Score setPlayer1(Player player1) {
         this.player1 = player1;
         return this;
     }
 
-    public Gracz getPlayer2() {
+    public Player getPlayer2() {
         return player2;
     }
 
-    public Wyniki setPlayer2(Gracz player2) {
+    public Score setPlayer2(Player player2) {
         this.player2 = player2;
         return this;
     }
@@ -49,7 +49,7 @@ public class Wyniki {
         return date;
     }
 
-    public Wyniki setDate(String date) {
+    public Score setDate(String date) {
         this.date = date;
         return this;
     }

@@ -1,10 +1,12 @@
 package pl.edu.wat.wcy.pz.frame;
 
-import pl.edu.wat.wcy.pz.checkers.Pionek;
-import pl.edu.wat.wcy.pz.events.ZmienJezykEvent;
-import pl.edu.wat.wcy.pz.exchangerate.PanelNotowania;
-import pl.edu.wat.wcy.pz.gameoption.PanelNowaGra;
-import pl.edu.wat.wcy.pz.listeners.ZmienJezykListener;
+import pl.edu.wat.wcy.pz.actions.ChangeLanguageAction;
+import pl.edu.wat.wcy.pz.actions.ExitAction;
+import pl.edu.wat.wcy.pz.checkers.Piece;
+import pl.edu.wat.wcy.pz.events.ChangeLanguageEvent;
+import pl.edu.wat.wcy.pz.exchangerate.ExchangeRatePanel;
+import pl.edu.wat.wcy.pz.gameoption.NewGamePanel;
+import pl.edu.wat.wcy.pz.listeners.ChangeLanguageListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,39 +18,40 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class StronaStartowa extends JPanel implements ZmienJezykListener {
-    private static final Logger LOGGER = Logger.getLogger(StronaStartowa.class.getSimpleName(), "LogsMessages");
-    private JLabel title, imageLabel;
-    private JButton button1, button2;
-    private AbstractAction startAction;
-    private OknoGlowne frame;
-    private PanelNotowania notowania;
-    private ImageIcon image;
+public class HomePanel extends JPanel implements ChangeLanguageListener {
+    private static final Logger LOGGER = Logger.getLogger(HomePanel.class.getSimpleName(), "LogsMessages");
+    private JLabel titleLabel, imageLabel;
+    private JButton startButton, exitButton;
+    private AbstractAction startAction, exitAction;
+    private MainFrame frame;
+    private ExchangeRatePanel exchangeRatePanel;
+    private ImageIcon logoImage;
     private Color titleForeground;
     private int titleSize;
     private Font myFont;
 
-    public StronaStartowa(OknoGlowne frame) {
+    public HomePanel(MainFrame frame) {
         super(new GridBagLayout());
         this.frame = frame;
         loadProperties();
-        notowania = new PanelNotowania(frame);
+        exchangeRatePanel = new ExchangeRatePanel(frame);
         startAction = new AbstractAction(null, new ImageIcon(getClass().getClassLoader().getResource("icons/start_24.png"))) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                frame.zmianaOkna(new PanelNowaGra(frame));
+                frame.changeContentPane(new NewGamePanel(frame));
             }
         };
-        button1 = new JButton(startAction);
-        button2 = new JButton(frame.getMenu().exitAction);
-        title = new JLabel();
-        title.setForeground(titleForeground);
+        startButton = new JButton(startAction);
+        exitAction=new ExitAction();
+        exitButton = new JButton(exitAction);
+        titleLabel = new JLabel();
+        titleLabel.setForeground(titleForeground);
         myFont = new Font(Font.SANS_SERIF, Font.PLAIN, titleSize);
-        title.setFont(myFont);
-        image = new ImageIcon(getClass().getClassLoader().getResource("icons/myLogo_150.png"));
-        imageLabel = new JLabel(image);
+        titleLabel.setFont(myFont);
+        logoImage = new ImageIcon(getClass().getClassLoader().getResource("icons/myLogo_150.png"));
+        imageLabel = new JLabel(logoImage);
         initGUI();
-        frame.getMenu().addZmienJezykListener(this);
+        ChangeLanguageAction.addChangeLanguageListener(this);
     }
 
     public void initGUI() {
@@ -62,7 +65,7 @@ public class StronaStartowa extends JPanel implements ZmienJezykListener {
             c.weighty = 1;
             c.insets = new Insets(20, 30, 20, 30);
             //c.fill = GridBagConstraints.BOTH;
-            add(title, c);
+            add(titleLabel, c);
 
             c.gridx = 0;
             c.gridy = 1;
@@ -75,29 +78,30 @@ public class StronaStartowa extends JPanel implements ZmienJezykListener {
             c.gridwidth = 1;
             c.gridheight = 1;
             c.fill = GridBagConstraints.BOTH;
-            add(button2, c);
+            add(exitButton, c);
 
             c.gridx = 2;
             c.gridy = 2;
             c.gridwidth = 1;
             c.gridheight = 1;
-            add(button1, c);
+            add(startButton, c);
 
             c.gridx = 1;
             c.gridy = 3;
             c.gridwidth = 1;
             c.gridheight = 1;
-            add(notowania, c);
+            add(exchangeRatePanel, c);
         });
     }
 
 
     @Override
-    public void changeLocal(ZmienJezykEvent event) {
+    public void changeLocal(ChangeLanguageEvent event) {
         SwingUtilities.invokeLater(() -> {
             ResourceBundle rb = event.getRb();
             startAction.putValue(Action.NAME, rb.getString("start"));
-            title.setText(rb.getString("gameName").toUpperCase());
+            titleLabel.setText(rb.getString("gameName").toUpperCase());
+            //exitAction.putValue(Action.NAME, rb.getString("exit"));
         });
     }
 
@@ -105,7 +109,7 @@ public class StronaStartowa extends JPanel implements ZmienJezykListener {
         return frame;
     }
 
-    public void setFrame(OknoGlowne frame) {
+    public void setFrame(MainFrame frame) {
         this.frame = frame;
     }
 
@@ -114,7 +118,7 @@ public class StronaStartowa extends JPanel implements ZmienJezykListener {
         InputStream input = null;
         String propertiesName = "config.properties";
         try {
-            input = Pionek.class.getClassLoader().getResource(propertiesName).openStream();
+            input = Piece.class.getClassLoader().getResource(propertiesName).openStream();
             properties.load(input);
             titleForeground = Color.decode(properties.getProperty("title.foreground"));
             titleSize = Integer.parseInt(properties.getProperty("title.size"));

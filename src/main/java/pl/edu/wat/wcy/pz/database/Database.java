@@ -1,10 +1,12 @@
 package pl.edu.wat.wcy.pz.database;
 
-import pl.edu.wat.wcy.pz.checkers.Gracz;
-import pl.edu.wat.wcy.pz.score.WynikGra;
-import pl.edu.wat.wcy.pz.score.Wyniki;
-import pl.edu.wat.wcy.pz.score.WynikiTableModel;
+import pl.edu.wat.wcy.pz.checkers.Player;
+import pl.edu.wat.wcy.pz.exceptions.TooShortGameException;
+import pl.edu.wat.wcy.pz.score.Score;
+import pl.edu.wat.wcy.pz.score.ScoreGame;
+import pl.edu.wat.wcy.pz.score.ScoreTableModel;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
@@ -13,13 +15,13 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Baza {
-    private static final Logger LOGGER = Logger.getLogger(Baza.class.getSimpleName(), "LogsMessages");
+public class Database {
+    private static final Logger LOGGER = Logger.getLogger(Database.class.getSimpleName(), "LogsMessages");
     private Connection conn;
     private Statement stat;
     private String url;
 
-    public Baza() {
+    public Database() {
         loadProperties();
         try {
             conn = DriverManager.getConnection(url);
@@ -56,16 +58,18 @@ public class Baza {
         this.stat = stat;
     }
 
-    public void zapiszWyniki(Gracz p1, Gracz p2) throws SQLException {
+    public void saveScore(Player p1, Player p2) throws TooShortGameException, SQLException {
         ResultSet rs;
         int generatedKey1 = -1, generatedKey2 = -1;
+        if ((p1.getMoves() + p2.getMoves()) < 5)
+            throw new TooShortGameException();
         String hexColor = "#" + Integer.toHexString(p1.getColor().getRGB()).substring(2).toUpperCase();
         String insertPlayer1 = "INSERT INTO PZ.dbo.Player (name, color, avatarName, numberOfMoves, time, winner) " +
-                "VALUES (\'" + p1.getNazwa() + "\', \'" + hexColor + "\', \'" + p1.getAvatarName() + "\', " + p1.getMoves() + ", " + p1.getTime() + ", " + (p1.isWon() ? 1 : 0) + ")";
+                "VALUES (\'" + p1.getName() + "\', \'" + hexColor + "\', \'" + p1.getAvatarName() + "\', " + p1.getMoves() + ", " + p1.getTime() + ", " + (p1.isWon() ? 1 : 0) + ")";
 
         hexColor = "#" + Integer.toHexString(p2.getColor().getRGB()).substring(2).toUpperCase();
         String insertPlayer2 = "INSERT INTO PZ.dbo.Player (name, color, avatarName, numberOfMoves, time, winner) " +
-                "VALUES (\'" + p2.getNazwa() + "\', \'" + hexColor + "\', \'" + p2.getAvatarName() + "\', " + p2.getMoves() + ", " + p2.getTime() + ", " + (p2.isWon() ? 1 : 0) + ")";
+                "VALUES (\'" + p2.getName() + "\', \'" + hexColor + "\', \'" + p2.getAvatarName() + "\', " + p2.getMoves() + ", " + p2.getTime() + ", " + (p2.isWon() ? 1 : 0) + ")";
 
         stat.execute(insertPlayer1, Statement.RETURN_GENERATED_KEYS);
         rs = stat.getGeneratedKeys();
@@ -84,11 +88,11 @@ public class Baza {
         LOGGER.info("db.saveInfo");
     }
 
-    public void sprawdzWyniki(WynikiTableModel data) throws SQLException {
+    public void checkScore(ScoreTableModel data) throws SQLException {
         ResultSet rs;
-        ArrayList<WynikGra> wynikGras = new ArrayList<>();
-        ArrayList<Wyniki> wynikis = new ArrayList<>();
-        Gracz p1, p2;
+        ArrayList<ScoreGame> scoreGames = new ArrayList<>();
+        ArrayList<Score> scores = new ArrayList<>();
+        Player p1, p2;
         String date, p1ID = null, p2ID = null;
 
         String selectGame = "SELECT TOP 3 *  FROM Game ORDER BY date DESC";
@@ -96,27 +100,30 @@ public class Baza {
         rs = stat.executeQuery(selectGame);
         int i = 0;
         while (rs.next()) {
-            wynikGras.add(new WynikGra(rs.getString("date"), rs.getString("id_player1"), rs.getString("id_player2")));
+            scoreGames.add(new ScoreGame(rs.getString("date"), rs.getString("id_player1"), rs.getString("id_player2")));
         }
 
-        for (WynikGra wg : wynikGras) {
+        for (ScoreGame wg : scoreGames) {
             p1 = getPlayer(wg.getPlayer1ID());
             p2 = getPlayer(wg.getPlayer2ID());
-            data.addWynik(new Wyniki(p1, p2, wg.getDate()));
+            data.addWynik(new Score(p1, p2, wg.getDate()));
             data.fireTableDataChanged();
         }
         LOGGER.info("db.readInfo");
     }
 
-    public Gracz getPlayer(String id) throws SQLException {
+    public Player getPlayer(String id) throws SQLException {
         String slelectPlayer1 = "SELECT * FROM Player WHERE id_player1=" + id;
-        Gracz player = null;
+        Player player = null;
         ResultSet rs = stat.executeQuery(slelectPlayer1);
         while (rs.next()) {
-            player = new Gracz();
-            player.setNazwa(rs.getString("name"));
+            player = new Player();
+            player.setName(rs.getString("name"));
             player.setWon(rs.getInt("winner") == 1);
             player.setAvatarName(rs.getString("avatarName"));
+            player.setColor(Color.decode(rs.getString("color")));
+            player.setTime(rs.getInt("time"));
+            player.setMoves(rs.getInt("numberOfMoves"));
         }
         return player;
     }

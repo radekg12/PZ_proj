@@ -3,7 +3,7 @@ package pl.edu.wat.wcy.pz.events;
 import java.util.EventObject;
 import java.util.ResourceBundle;
 
-public class ZmienJezykEvent extends EventObject {
+public class ChangeLanguageEvent extends EventObject {
 
     private ResourceBundle rb;
 
@@ -13,7 +13,7 @@ public class ZmienJezykEvent extends EventObject {
      * @param source The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    public ZmienJezykEvent(Object source, ResourceBundle rb) {
+    public ChangeLanguageEvent(Object source, ResourceBundle rb) {
         super(source);
         this.rb = rb;
     }

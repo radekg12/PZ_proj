@@ -1,8 +1,10 @@
 package pl.edu.wat.wcy.pz.frame;
 
-import pl.edu.wat.wcy.pz.events.ZmienJezykEvent;
-import pl.edu.wat.wcy.pz.game.OknoGry;
-import pl.edu.wat.wcy.pz.listeners.ZmienJezykListener;
+import pl.edu.wat.wcy.pz.actions.ChangeLanguageAction;
+import pl.edu.wat.wcy.pz.actions.ExitAction;
+import pl.edu.wat.wcy.pz.events.ChangeLanguageEvent;
+import pl.edu.wat.wcy.pz.game.GamePanel;
+import pl.edu.wat.wcy.pz.listeners.ChangeLanguageListener;
 import pl.edu.wat.wcy.pz.logger.LoggerConfiguration;
 
 import javax.swing.*;
@@ -18,45 +20,45 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class OknoGlowne extends JFrame implements ZmienJezykListener {
+public class MainFrame extends JFrame implements ChangeLanguageListener {
     private Logger logger;
     private int defaultWidth, defaultHeight;
     private Menu menu;
     private String gameName;
-    private Image image;
-    private OknoGlowne frame;
+    private Image logoImage;
+    private MainFrame frame;
     private Color backgroundColor, backgroundColorLight, foregroundColor;
     private Font myFont1;
 
 
-    public OknoGlowne() {
+    public MainFrame() {
         new LoggerConfiguration();
-        logger = Logger.getLogger(OknoGlowne.class.getSimpleName(), "LogsMessages");
+        logger = Logger.getLogger(MainFrame.class.getSimpleName(), "LogsMessages");
         loadProperties();
-        image = new ImageIcon(getClass().getClassLoader().getResource("icons/myLogo3.png")).getImage();
+        logoImage = new ImageIcon(getClass().getClassLoader().getResource("icons/myLogo3.png")).getImage();
         setSize(defaultWidth, defaultHeight);
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
-        setIconImage(image);
+        setIconImage(logoImage);
         menu = new Menu(this);
         setJMenuBar(menu);
         addWindowListener(new MyDialog());
-        menu.addZmienJezykListener(this);
+        ChangeLanguageAction.addChangeLanguageListener(this);
         loadUILook();
         frame = this;
         SwingUtilities.invokeLater(() -> {
-            getContentPane().add(new StronaStartowa(frame));
+            getContentPane().add(new HomePanel(frame));
         });
 
         setVisible(true);
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(OknoGlowne::new);
+        SwingUtilities.invokeLater(MainFrame::new);
     }
 
 
-    public void zmianaOkna(Component component) {
+    public void changeContentPane(Component component) {
         SwingUtilities.invokeLater(() -> {
             getContentPane().removeAll();
             getContentPane().invalidate();
@@ -75,7 +77,7 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
     }
 
     @Override
-    public void changeLocal(ZmienJezykEvent event) {
+    public void changeLocal(ChangeLanguageEvent event) {
         SwingUtilities.invokeLater(() -> {
             ResourceBundle rb = event.getRb();
             gameName = rb.getString("gameName");
@@ -92,7 +94,7 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
             input = getClass().getClassLoader().getResource(propertiesName).openStream();
             properties.load(input);
 
-            backgroundColor = Color.decode(properties.getProperty("background.dark"));
+            backgroundColor = Color.decode(properties.getProperty("background.darkColor"));
             backgroundColorLight = Color.decode(properties.getProperty("background.bright"));
             foregroundColor = Color.decode(properties.getProperty("foreground"));
             myFont1 = new Font(Font.DIALOG, Font.BOLD, Integer.parseInt(properties.getProperty("myFont.size")));
@@ -131,66 +133,60 @@ public class OknoGlowne extends JFrame implements ZmienJezykListener {
     }
 
 
-    private class MyDialog extends WindowAdapter implements ZmienJezykListener {
-        //TODO ?????
-        private JButton anulujButton;
+    private class MyDialog extends WindowAdapter implements ChangeLanguageListener {
+        private JButton cancelButton;
         //private JButton zapiszButton = new JButton();
         private JButton zamknijButton = new JButton();
         private JButton[] buttons;
-        private String komunikat, tytul;
+        private String message, title;
         private Icon alertIcon;
         private JOptionPane optionPane;
         private JDialog dialog;
-        private AbstractAction anulujAction;
+        private AbstractAction cancelAction;
 
         MyDialog() {
-            zamknijButton.addActionListener(new AbstractAction() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.exit(0);
-                }
-            });
-            anulujAction = new AbstractAction() {
+            zamknijButton.addActionListener(new ExitAction());
+            cancelAction = new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     dialog.setVisible(false);
                 }
             };
-            anulujButton = new JButton(anulujAction);
-            //buttons = new JButton[]{anulujButton, zapiszButton, zamknijButton};
-            buttons = new JButton[]{anulujButton, zamknijButton};
+            cancelButton = new JButton(cancelAction);
+            //buttons = new JButton[]{cancelButton, zapiszButton, zamknijButton};
+            buttons = new JButton[]{cancelButton, zamknijButton};
             alertIcon = new ImageIcon(getClass().getClassLoader().getResource("icons/warning_2.png"));
-            menu.addZmienJezykListener(this);
+            ChangeLanguageAction.addChangeLanguageListener(this);
 
         }
 
         @Override
         public void windowClosing(WindowEvent e) {
             Component[] cos = getContentPane().getComponents();
-            boolean x = Arrays.stream(cos).anyMatch(c -> c instanceof OknoGry);
+            boolean x = Arrays.stream(cos).anyMatch(c -> c instanceof GamePanel);
             if (x)
-                zamykanie();
+                closing();
             else System.exit(0);
         }
 
-        public void zamykanie() {
+        public void closing() {
             SwingUtilities.invokeLater(() -> {
                 dialog.setVisible(true);
             });
         }
 
         @Override
-        public void changeLocal(ZmienJezykEvent event) {
+        public void changeLocal(ChangeLanguageEvent event) {
             ResourceBundle rb = event.getRb();
-            komunikat = (rb.getString("alert.statement"));
-            tytul = (rb.getString("alert.title"));
-            anulujButton.setText(rb.getString("cancel"));
+            message = (rb.getString("alert.statement"));
+            title = (rb.getString("alert.title"));
+            cancelButton.setText(rb.getString("cancel"));
             zamknijButton.setText(rb.getString("exit"));
             //zapiszButton.setText(rb.getString("save"));
             optionPane = new JOptionPane(
-                    komunikat, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, alertIcon, buttons, buttons[1]
+                    message, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, alertIcon, buttons, buttons[1]
             );
-            dialog = optionPane.createDialog(tytul);
+            dialog = optionPane.createDialog(title);
         }
     }
 }

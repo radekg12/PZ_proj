@@ -3,10 +3,10 @@ package pl.edu.wat.wcy.pz.checkers;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Gracz {
-    //private static final Logger LOGGER = Logger.getLogger(pl.edu.wat.wcy.pz.checkers.Gracz.class.getSimpleName(), "LogsMessages");
-    private String nazwa;
-    private ArrayList<Pionek> pionki = new ArrayList<>();
+public class Player {
+    //private static final Logger LOGGER = Logger.getLogger(pl.edu.wat.wcy.pz.checkers.Player.class.getSimpleName(), "LogsMessages");
+    private String name;
+    private ArrayList<Piece> pieces = new ArrayList<>();
     private Image avatar;
     private String avatarName;
     private Color color;
@@ -15,46 +15,46 @@ public class Gracz {
     private int time;
     private int moves;
 
-    public Gracz() {
+    public Player() {
     }
 
-    public Gracz(String nazwa, Image avatar, String avatarName, int k) {
-        this.nazwa = nazwa;
+    public Player(String name, Image avatar, String avatarName, int k) {
+        this.name = name;
         this.avatar = avatar;
         this.avatarName = avatarName;
         this.k = k;
         time = 0;
         moves = 0;
         if (k == 1) {
-            color = Pionek.getJasny();
+            color = Piece.getLightColor();
         } else if (k == -1) {
-            color = Pionek.getCiemny();
+            color = Piece.getDarkColor();
         }
     }
 
 
-    public String getNazwa() {
-        return nazwa;
+    public String getName() {
+        return name;
     }
 
-    public void setNazwa(String nazwa) {
-        this.nazwa = nazwa;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public ArrayList<Pionek> getPionki() {
-        return pionki;
+    public ArrayList<Piece> getPieces() {
+        return pieces;
     }
 
-    public void setPionki(ArrayList<Pionek> pionki) {
-        this.pionki = pionki;
+    public void setPieces(ArrayList<Piece> pieces) {
+        this.pieces = pieces;
     }
 
-    public void dodajPionek(Pionek pionek) {
-        pionki.add(pionek);
+    public void addPiece(Piece piece) {
+        pieces.add(piece);
     }
 
-    public void usunPionek(Pionek pionek) {
-        pionki.remove(pionek);
+    public void removePiece(Piece piece) {
+        pieces.remove(piece);
     }
 
     public int getK() {
@@ -69,7 +69,7 @@ public class Gracz {
         return avatar;
     }
 
-    public Gracz setAvatar(Image avatar) {
+    public Player setAvatar(Image avatar) {
         this.avatar = avatar;
         return this;
     }
@@ -78,7 +78,7 @@ public class Gracz {
         return won;
     }
 
-    public Gracz setWon(boolean won) {
+    public Player setWon(boolean won) {
         this.won = won;
         return this;
     }
@@ -87,7 +87,7 @@ public class Gracz {
         return avatarName;
     }
 
-    public Gracz setAvatarName(String avatarName) {
+    public Player setAvatarName(String avatarName) {
         this.avatarName = avatarName;
         return this;
     }
@@ -112,17 +112,17 @@ public class Gracz {
         return moves;
     }
 
-    public Gracz setColor(Color color) {
+    public Player setColor(Color color) {
         this.color = color;
         return this;
     }
 
-    public Gracz setTime(int time) {
+    public Player setTime(int time) {
         this.time = time;
         return this;
     }
 
-    public Gracz setMoves(int moves) {
+    public Player setMoves(int moves) {
         this.moves = moves;
         return this;
     }

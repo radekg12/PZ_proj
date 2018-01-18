@@ -1,11 +1,12 @@
 package pl.edu.wat.wcy.pz.gameoption;
 
-import pl.edu.wat.wcy.pz.checkers.Gracz;
-import pl.edu.wat.wcy.pz.events.ZmienJezykEvent;
-import pl.edu.wat.wcy.pz.frame.OknoGlowne;
-import pl.edu.wat.wcy.pz.frame.StronaStartowa;
-import pl.edu.wat.wcy.pz.game.OknoGry;
-import pl.edu.wat.wcy.pz.listeners.ZmienJezykListener;
+import pl.edu.wat.wcy.pz.actions.ChangeLanguageAction;
+import pl.edu.wat.wcy.pz.actions.HomePanelAction;
+import pl.edu.wat.wcy.pz.checkers.Player;
+import pl.edu.wat.wcy.pz.events.ChangeLanguageEvent;
+import pl.edu.wat.wcy.pz.frame.MainFrame;
+import pl.edu.wat.wcy.pz.game.GamePanel;
+import pl.edu.wat.wcy.pz.listeners.ChangeLanguageListener;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -18,14 +19,12 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PanelNowaGra extends JPanel implements ZmienJezykListener {
-    private static final Logger LOGGER = Logger.getLogger(PanelNowaGra.class.getSimpleName(), "LogsMessages");
-    private OknoGlowne frame;
+public class NewGamePanel extends JPanel implements ChangeLanguageListener {
+    private static final Logger LOGGER = Logger.getLogger(NewGamePanel.class.getSimpleName(), "LogsMessages");
+    private MainFrame frame;
     private JLabel label1, label2, labelSlider;
     private JTextField textField1, textField2;
     private AvatarComboBox customComboBox1, customComboBox2;
-    //TODO
-    //wybor kolorow
     private JButton startButton, backButton;
     private AbstractAction startAction, backAction, selectSexF1Action, selectSexF2Action, selectSexM1Action, selectSexM2Action;
     private JRadioButton radioButtonF1, radioButtonF2, radioButtonM1, radioButtonM2;
@@ -35,7 +34,7 @@ public class PanelNowaGra extends JPanel implements ZmienJezykListener {
     private TitledBorder border;
     private int minTime, maxTime, defaultTime, sliderMajor, sliderMinor;
 
-    public PanelNowaGra(OknoGlowne frame) {
+    public NewGamePanel(MainFrame frame) {
         super(new GridBagLayout());
         loadProperties();
         this.frame = frame;
@@ -55,19 +54,13 @@ public class PanelNowaGra extends JPanel implements ZmienJezykListener {
         startAction = new AbstractAction(null, new ImageIcon(getClass().getClassLoader().getResource("icons/start_24.png"))) {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Gracz gracz1 = new Gracz(textField1.getText(), customComboBox1.getSelectedImage(), customComboBox1.getSelectedImageName(), -1);
-                Gracz gracz2 = new Gracz(textField2.getText(), customComboBox2.getSelectedImage(), customComboBox2.getSelectedImageName(), 1);
+                Player player1 = new Player(textField1.getText(), customComboBox1.getSelectedImage(), customComboBox1.getSelectedImageName(), -1);
+                Player player2 = new Player(textField2.getText(), customComboBox2.getSelectedImage(), customComboBox2.getSelectedImageName(), 1);
                 int time = slider.getValue();
-                frame.zmianaOkna(new OknoGry(frame, gracz1, gracz2, time));
+                frame.changeContentPane(new GamePanel(frame, player1, player2, time));
             }
         };
-        backAction = new AbstractAction(null, new ImageIcon(getClass().getClassLoader().getResource("icons/back_24.png"))) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.zmianaOkna(new StronaStartowa(frame));
-            }
-        };
-
+        backAction = new HomePanelAction(frame);
 
         startButton = new JButton(startAction);
         backButton = new JButton(backAction);
@@ -106,7 +99,7 @@ public class PanelNowaGra extends JPanel implements ZmienJezykListener {
         box2.add(radioButtonM2);
         box2.add(radioButtonF2);
 
-        frame.getMenu().addZmienJezykListener(this);
+        ChangeLanguageAction.addChangeLanguageListener(this);
         initGUI();
     }
 
@@ -180,11 +173,11 @@ public class PanelNowaGra extends JPanel implements ZmienJezykListener {
     }
 
     @Override
-    public void changeLocal(ZmienJezykEvent event) {
+    public void changeLocal(ChangeLanguageEvent event) {
         SwingUtilities.invokeLater(() -> {
             ResourceBundle rb = event.getRb();
             startAction.putValue(Action.NAME, rb.getString("start"));
-            backAction.putValue(Action.NAME, rb.getString("back"));
+            //backAction.putValue(Action.NAME, rb.getString("back"));
             selectSexF1Action.putValue(Action.NAME, rb.getString("female"));
             selectSexF2Action.putValue(Action.NAME, rb.getString("female"));
             selectSexM1Action.putValue(Action.NAME, rb.getString("male"));

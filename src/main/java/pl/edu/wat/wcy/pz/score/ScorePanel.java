@@ -1,10 +1,11 @@
 package pl.edu.wat.wcy.pz.score;
 
-import pl.edu.wat.wcy.pz.checkers.Gracz;
-import pl.edu.wat.wcy.pz.database.Baza;
-import pl.edu.wat.wcy.pz.events.ZmienJezykEvent;
-import pl.edu.wat.wcy.pz.frame.OknoGlowne;
-import pl.edu.wat.wcy.pz.listeners.ZmienJezykListener;
+import pl.edu.wat.wcy.pz.actions.ChangeLanguageAction;
+import pl.edu.wat.wcy.pz.checkers.Player;
+import pl.edu.wat.wcy.pz.database.Database;
+import pl.edu.wat.wcy.pz.events.ChangeLanguageEvent;
+import pl.edu.wat.wcy.pz.frame.MainFrame;
+import pl.edu.wat.wcy.pz.listeners.ChangeLanguageListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -19,44 +20,49 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PanelWyniki extends JFrame implements ZmienJezykListener {
-    private static final Logger LOGGER = Logger.getLogger(PanelWyniki.class.getSimpleName(), "LogsMessages");
-    private WynikiTableModel data;
+public class ScorePanel extends JFrame implements ChangeLanguageListener {
+    private static final Logger LOGGER = Logger.getLogger(ScorePanel.class.getSimpleName(), "LogsMessages");
+    private ScoreTableModel model;
     private JTable table;
-    private ArrayList<Wyniki> result = new ArrayList<>();
-    private int defaultWidth, defaultHeight, avatarSize;
+    private ArrayList<Score> result = new ArrayList<>();
+    private int defaultWidth, defaultHeight, avatarSize, medalSize;
+    private BufferedImage medalImg;
 
-    public PanelWyniki(OknoGlowne frame) {
+    public ScorePanel(MainFrame frame) {
         loadProperties();
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setSize(defaultWidth, defaultHeight);
         setLayout(new GridLayout(1, 1));
-        data = new WynikiTableModel(result, frame);
-        table = new JTable(data);
+        model = new ScoreTableModel(result, frame);
+        table = new JTable(model);
         WynikiCellRenderer renderer = new WynikiCellRenderer();
         table.setDefaultRenderer(Object.class, renderer);
-        //TODO
         table.setRowHeight(avatarSize + 20);
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane);
+        try {
+            medalImg = ImageIO.read(getClass().getClassLoader().getResource("icons/won_70.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        new SwingWorker<ArrayList<Wyniki>, Void>() {
+        new SwingWorker<ArrayList<Score>, Void>() {
             @Override
-            protected ArrayList<Wyniki> doInBackground() throws Exception {
-                Baza baza = new Baza();
-                baza.sprawdzWyniki(data);
-                baza.closeConnection();
+            protected ArrayList<Score> doInBackground() throws Exception {
+                Database database = new Database();
+                database.checkScore(model);
+                database.closeConnection();
                 return result;
             }
 
         }.execute();
-        frame.getMenu().addZmienJezykListener(this);
+        ChangeLanguageAction.addChangeLanguageListener(this);
         setVisible(true);
     }
 
 
     @Override
-    public void changeLocal(ZmienJezykEvent event) {
+    public void changeLocal(ChangeLanguageEvent event) {
         SwingUtilities.invokeLater(() -> {
             ResourceBundle rb = event.getRb();
             setTitle(rb.getString("score"));
@@ -73,6 +79,7 @@ public class PanelWyniki extends JFrame implements ZmienJezykListener {
             defaultWidth = Integer.parseInt(properties.getProperty("score.defaultWidth"));
             defaultHeight = Integer.parseInt(properties.getProperty("score.defaultHeight"));
             avatarSize = Integer.parseInt(properties.getProperty("score.avatarSize"));
+            medalSize = Integer.parseInt(properties.getProperty("score.medalSize"));
         } catch (IOException ex) {
             LOGGER.log(Level.WARNING, "properties.open", ex);
         } finally {
@@ -95,40 +102,44 @@ public class PanelWyniki extends JFrame implements ZmienJezykListener {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
+            JPanel panel = new JPanel();
+            panel.setOpaque(false);
             JLabel l = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            panel.add(l);
             l.setHorizontalAlignment(JLabel.LEFT);
             l.setVerticalAlignment(JLabel.CENTER);
             l.setHorizontalTextPosition(JLabel.RIGHT);
             l.setVerticalTextPosition(JLabel.CENTER);
-            if (value instanceof Gracz) {
-                l.setText(((Gracz) value).getNazwa());
+            if (value instanceof Player) {
+                l.setText(((Player) value).getName());
                 BufferedImage img;
                 try {
-                    String name = ((Gracz) value).getAvatarName();
+                    String name = ((Player) value).getAvatarName();
+                    Color color = ((Player) value).getColor();
                     if (name != null) {
                         img = ImageIO.read(getClass().getClassLoader().getResource("icons/avatars/" + name));
                         Image icon = img.getScaledInstance(avatarSize, avatarSize, img.getType());
                         l.setIcon(new ImageIcon(icon));
+                        l.setForeground(color);
                     }
                 } catch (IOException e) {
                     LOGGER.log(Level.WARNING, "image.open", e);
                 }
-                if (((Gracz) value).isWon())
-                    //TODO
-                    l.setForeground(Color.RED);
-                else
-                    l.setForeground(Color.BLACK);
+                if (((Player) value).isWon()) {
+                    Image icon = medalImg.getScaledInstance(medalSize, medalSize, medalImg.getType());
+                    panel.add(new JLabel(new ImageIcon(icon)));
+                }
+
             }
 
             if (value instanceof String) {
                 l.setText(((String) value).split(" ")[0]);
-                //TODO
-                l.setForeground(Color.GREEN);
+                l.setForeground(Color.BLACK);
                 l.setIcon(null);
                 l.setHorizontalAlignment(JLabel.CENTER);
                 l.setVerticalAlignment(JLabel.CENTER);
             }
-            return l;
+            return panel;
         }
     }
 }

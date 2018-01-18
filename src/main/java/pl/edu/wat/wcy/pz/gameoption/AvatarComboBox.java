@@ -1,7 +1,5 @@
 package pl.edu.wat.wcy.pz.gameoption;
 
-import pl.edu.wat.wcy.pz.checkers.Pionek;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +21,7 @@ public class AvatarComboBox extends JPanel {
     private ArrayList<String> imageIndex2 = new ArrayList<>();
     private JComboBox comboBox;
     private Color color, selectedColor;
-    private TreeViewer treeViewer;
+    private AvatarXML avatarXML;
     private int avatarSize;
 
 
@@ -43,7 +41,7 @@ public class AvatarComboBox extends JPanel {
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
-                treeViewer = new TreeViewer();
+                avatarXML = new AvatarXML();
                 return null;
             }
         }.execute();
@@ -93,7 +91,7 @@ public class AvatarComboBox extends JPanel {
     }
 
     public void filter(String s) {
-        HashMap<String, String> hashMap = treeViewer.getAvatarsHashMap();
+        HashMap<String, String> hashMap = avatarXML.getAvatarsHashMap();
         imageIndex2.clear();
         imageIndex.stream().filter(x -> hashMap.get(x.split("\\.")[0]).equals(s)).forEach(i -> imageIndex2.add(i));
         String[] array11 = new String[imageIndex2.size()];
@@ -108,7 +106,7 @@ public class AvatarComboBox extends JPanel {
         try {
             input = getClass().getClassLoader().getResource(propertiesName).openStream();
             properties.load(input);
-            color = Color.decode(properties.getProperty("background.dark"));
+            color = Color.decode(properties.getProperty("background.darkColor"));
             selectedColor = Color.decode(properties.getProperty("background.bright"));
             avatarSize = Integer.parseInt(properties.getProperty("avatar.size"));
         } catch (IOException ex) {

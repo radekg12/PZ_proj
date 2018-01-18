@@ -1,17 +1,16 @@
 package pl.edu.wat.wcy.pz.game;
 
-import pl.edu.wat.wcy.pz.checkers.Gra;
-import pl.edu.wat.wcy.pz.checkers.Gracz;
-import pl.edu.wat.wcy.pz.events.KoniecCzasuEvent;
+import pl.edu.wat.wcy.pz.checkers.CheckersGame;
+import pl.edu.wat.wcy.pz.checkers.Player;
+import pl.edu.wat.wcy.pz.events.ChangeTurnEvent;
+import pl.edu.wat.wcy.pz.events.EndOfTimeEvent;
 import pl.edu.wat.wcy.pz.events.ReplayEvent;
-import pl.edu.wat.wcy.pz.events.WygranaEvent;
-import pl.edu.wat.wcy.pz.events.ZmienKolejEvent;
-import pl.edu.wat.wcy.pz.frame.OknoGlowne;
-import pl.edu.wat.wcy.pz.frame.StronaStartowa;
-import pl.edu.wat.wcy.pz.listeners.KoniecCzasuListener;
+import pl.edu.wat.wcy.pz.events.WinEvent;
+import pl.edu.wat.wcy.pz.frame.MainFrame;
+import pl.edu.wat.wcy.pz.listeners.ChangeTurnListener;
+import pl.edu.wat.wcy.pz.listeners.EndOfTimeListener;
 import pl.edu.wat.wcy.pz.listeners.ReplayListener;
-import pl.edu.wat.wcy.pz.listeners.WygranaListener;
-import pl.edu.wat.wcy.pz.listeners.ZmienKolejListener;
+import pl.edu.wat.wcy.pz.listeners.WinListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,34 +26,27 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaListener, ReplayListener {
-    private static final Logger LOGGER = Logger.getLogger(PanelGracza.class.getSimpleName(), "LogsMessages");
-    private JButton button = new JButton("usun");
-    private Gracz gracz;
-    private boolean aktywny;
+public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListener, ReplayListener {
+    private static final Logger LOGGER = Logger.getLogger(PlayerPanel.class.getSimpleName(), "LogsMessages");
+    private Player player;
+    private boolean active;
     private Color color, activeColor, foreground, foreground2;
     private JLabel nazwaLabel, avatarLabel, timerLabel;
     private boolean won;
     private BufferedImage medal;
     private ImageIcon hourglass, timeEnd;
     private Timer timer;
-    private int time;
+    private final int time;
     private int tmpTime;
-    private static ArrayList<KoniecCzasuListener> koniecCzasuListeners = new ArrayList<>();
+    private static ArrayList<EndOfTimeListener> endOfTimeListeners = new ArrayList<>();
 
-    public PanelGracza(OknoGlowne frame, Gracz gracz, Gra gra, int time) {
+    public PlayerPanel(MainFrame frame, Player player, CheckersGame checkersGame, int time) {
         loadProperties();
-        button.addActionListener(new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.zmianaOkna(new StronaStartowa(frame));
-            }
-        });
-        this.gracz = gracz;
+        this.player = player;
         this.time = time;
         won = false;
-        aktywny = gracz.getK() == 1;
-        setBackground(aktywny ? activeColor : color);
+        active = player.getK() == 1;
+        setBackground(active ? activeColor : color);
         try {
             medal = ImageIO.read(new File(String.valueOf(getClass().getClassLoader().getResource("icons/won_70.png")).replace("file:/", "")));
             hourglass = new ImageIcon(getClass().getClassLoader().getResource("icons/hourglass_24.gif"));
@@ -62,14 +54,14 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "image.open", e);
         }
-        nazwaLabel = new JLabel(gracz.getNazwa());
+        nazwaLabel = new JLabel(player.getName());
         nazwaLabel.setHorizontalAlignment(JLabel.CENTER);
-        avatarLabel = new JLabel(new ImageIcon(gracz.getAvatar()));
+        avatarLabel = new JLabel(new ImageIcon(player.getAvatar()));
         tmpTime = time;
         timerLabel = new JLabel(String.valueOf(tmpTime), hourglass, JLabel.LEFT);
         timerLabel.setMinimumSize(new Dimension(hourglass.getIconWidth(), hourglass.getIconHeight()));
-        gra.addZmienKolejListener(this);
-        gra.addWygranaListener(this);
+        checkersGame.addChangeTurnListener(this);
+        checkersGame.addWinListener(this);
 
         timer = new Timer(1000, new ActionListener() {
             @Override
@@ -80,11 +72,11 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
                 if (tmpTime <= 0) {
                     timer.stop();
                     timerLabel.setIcon(timeEnd);
-                    fireKoniecCzasuEvent();
+                    fireEndOfTimeEvent();
                 }
             }
         });
-        if (aktywny) {
+        if (active) {
             timer.start();
         }
         initGUI();
@@ -95,7 +87,7 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
             setLayout(new BorderLayout());
             add(nazwaLabel, BorderLayout.NORTH);
             add(avatarLabel, BorderLayout.CENTER);
-            if (!aktywny)
+            if (!active)
                 //timerLabel.setIcon(hourglass);
                 timerLabel.setVisible(false);
             add(timerLabel, BorderLayout.SOUTH);
@@ -110,33 +102,33 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
     }
 
     @Override
-    public void zmienKolej(ZmienKolejEvent event) {
-        aktywny = !aktywny;
+    public void changeTurn(ChangeTurnEvent event) {
+        active = !active;
         SwingUtilities.invokeLater(() -> {
-            if (aktywny) {
+            if (active) {
                 timer.start();
                 //timerLabel.setIcon(hourglass);
                 timerLabel.setVisible(true);
                 timerLabel.setForeground(foreground);
             } else {
                 timer.stop();
-                gracz.addTime(time - tmpTime);
+                player.addTime(time - tmpTime);
                 tmpTime = time;
                 timerLabel.setText(String.valueOf(tmpTime));
                 //timerLabel.setIcon(null);
                 timerLabel.setVisible(false);
             }
-            setBackground(aktywny ? activeColor : color);
+            setBackground(active ? activeColor : color);
         });
         revalidate();
     }
 
 
     @Override
-    public void wygrana(WygranaEvent event) {
+    public void win(WinEvent event) {
         timer.stop();
-        gracz.addTime(time - tmpTime);
-        if (event.getWygrany() == gracz) {
+        player.addTime(time - tmpTime);
+        if (event.getWonPlayer() == player) {
             won = true;
             setBackground(color);
             repaint();
@@ -167,26 +159,29 @@ public class PanelGracza extends JPanel implements ZmienKolejListener, WygranaLi
         }
     }
 
-    public static synchronized void addKoniecCzasuListener(KoniecCzasuListener l) {
-        koniecCzasuListeners.add(l);
+    public static synchronized void addEndOfTimeListener(EndOfTimeListener l) {
+        endOfTimeListeners.add(l);
     }
 
-    public static synchronized void removeKoniecCzasuListener(KoniecCzasuListener l) {
-        koniecCzasuListeners.remove(l);
+    public static synchronized void removeEndOfTimeListener(EndOfTimeListener l) {
+        endOfTimeListeners.remove(l);
     }
 
-    private synchronized void fireKoniecCzasuEvent() {
-        KoniecCzasuEvent event = new KoniecCzasuEvent(this, gracz);
-        for (KoniecCzasuListener l : koniecCzasuListeners) l.koniecCzasu(event);
+    private synchronized void fireEndOfTimeEvent() {
+        EndOfTimeEvent event = new EndOfTimeEvent(this, player);
+        for (EndOfTimeListener l : endOfTimeListeners)
+            l.endOfTime(event);
     }
 
     @Override
-    public void clean(ReplayEvent event) {
+    public void replay(ReplayEvent event) {
         won = false;
         timerLabel.setIcon(hourglass);
-        gracz.setWon(false);
-        gracz.setMoves(0);
-        gracz.setTime(0);
+        player.setWon(false);
+        player.setMoves(0);
+        player.setTime(0);
+        tmpTime=time;
+        active = player.getK() == 1;
         repaint();
     }
 }

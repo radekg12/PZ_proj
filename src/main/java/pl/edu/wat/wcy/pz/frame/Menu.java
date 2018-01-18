@@ -1,31 +1,27 @@
 package pl.edu.wat.wcy.pz.frame;
 
-import pl.edu.wat.wcy.pz.events.ZmienJezykEvent;
-import pl.edu.wat.wcy.pz.listeners.ZmienJezykListener;
-import pl.edu.wat.wcy.pz.score.PanelWyniki;
+import pl.edu.wat.wcy.pz.actions.ChangeLanguageAction;
+import pl.edu.wat.wcy.pz.actions.ChangeLookAction;
+import pl.edu.wat.wcy.pz.actions.ExitAction;
+import pl.edu.wat.wcy.pz.actions.ScoreAction;
+import pl.edu.wat.wcy.pz.events.ChangeLanguageEvent;
+import pl.edu.wat.wcy.pz.listeners.ChangeLanguageListener;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Menu extends JMenuBar implements ZmienJezykListener {
+public class Menu extends JMenuBar implements ChangeLanguageListener {
     private static final Logger LOGGER = Logger.getLogger(Menu.class.getSimpleName(), "LogsMessages");
-    private OknoGlowne frame;
+    private MainFrame frame;
     private JMenu file, view, changeLook, changeLanguage;
     private JMenuItem look1, look2, look3, exit, chPL, chEN, score;
-    AbstractAction exitAction, scoreAcrion;
-    private AbstractAction changeToPL;
-    private AbstractAction changeToEN;
-    private Locale locale = Locale.getDefault();
-    private ResourceBundle rb = ResourceBundle.getBundle("Languages", locale);
-    private ArrayList<ZmienJezykListener> zmienJezykListeners = new ArrayList<>();
+    private AbstractAction exitAction, scoreAction, changeToPLAction, changeToENAction;
 
 
-    public Menu(OknoGlowne frame) {
+    public Menu(MainFrame frame) {
         this.frame = frame;
         initMenu();
         initGUI();
@@ -35,58 +31,26 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
         file = new JMenu();
         view = new JMenu();
 
-        exitAction = new AbstractAction(null, new ImageIcon(getClass().getClassLoader().getResource("icons/exit_24.png"))) {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        };
-
-        scoreAcrion = new AbstractAction(null, new ImageIcon(getClass().getClassLoader().getResource("icons/wyniki_24.png"))) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SwingUtilities.invokeLater(() -> new PanelWyniki(frame));
-            }
-        };
-
+        exitAction = new ExitAction();
         exit = new JMenuItem(exitAction);
-        score = new JMenuItem(scoreAcrion);
+        scoreAction = new ScoreAction(frame);
+        score = new JMenuItem(scoreAction);
 
         changeLook = new JMenu();
         changeLook.setIcon(new ImageIcon(getClass().getClassLoader().getResource("icons/look_24.png")));
-        look1 = new JMenuItem(new chLook("Look 1", new ImageIcon(getClass().getClassLoader().getResource("icons/l1_24.png"))));
-        look2 = new JMenuItem(new chLook("Look 2", new ImageIcon(getClass().getClassLoader().getResource("icons/l2_24.png"))));
-        look3 = new JMenuItem(new chLook("Look 3", new ImageIcon(getClass().getClassLoader().getResource("icons/l3_24.png"))));
-
-        class chLanguageAction extends AbstractAction {
-            String language;
-            String country;
-
-            public chLanguageAction(String language, String country, Icon icon) {
-                super(language, icon);
-                this.language = language;
-                this.country = country;
-
-            }
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                locale = new Locale(language, country);
-                rb = ResourceBundle.getBundle("Languages", locale);
-                fireZmianaJezykaEvent();
-            }
-        }
-
-        changeToPL = new chLanguageAction("pl", "PL", new ImageIcon(getClass().getClassLoader().getResource("icons/pll_24.png")));
-        changeToEN = new chLanguageAction("en", "US", new ImageIcon(getClass().getClassLoader().getResource("icons/uk_24.png")));
+        look1 = new JMenuItem(new ChangeLookAction("Look 1", frame));
+        look2 = new JMenuItem(new ChangeLookAction("Look 2", frame));
+        look3 = new JMenuItem(new ChangeLookAction("Look 3", frame));
 
         changeLanguage = new JMenu();
         changeLanguage.setIcon(new ImageIcon(getClass().getClassLoader().getResource("icons/lang_24.png")));
-        chPL = new JMenuItem(changeToPL);
-        chEN = new JMenuItem(changeToEN);
 
-        addZmienJezykListener(this);
+        changeToPLAction = new ChangeLanguageAction("pl", "PL");
+        changeToENAction = new ChangeLanguageAction("en", "EN");
+        chPL = new JMenuItem(changeToPLAction);
+        chEN = new JMenuItem(changeToENAction);
+
+        ChangeLanguageAction.addChangeLanguageListener(this);
     }
 
     public void initGUI() {
@@ -108,21 +72,12 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
 
     }
 
-    public OknoGlowne getFrame() {
+    public MainFrame getFrame() {
         return frame;
     }
 
     @Override
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public ResourceBundle getRb() {
-        return rb;
-    }
-
-    @Override
-    public void changeLocal(ZmienJezykEvent event) {
+    public void changeLocal(ChangeLanguageEvent event) {
         SwingUtilities.invokeLater(() -> {
             ResourceBundle rb = event.getRb();
             file.setText(rb.getString("file"));
@@ -130,63 +85,13 @@ public class Menu extends JMenuBar implements ZmienJezykListener {
             look1.setText(rb.getString("look1"));
             look2.setText(rb.getString("look2"));
             look3.setText(rb.getString("look3"));
-            exitAction.putValue(Action.NAME, rb.getString("exit"));
-            scoreAcrion.putValue(Action.NAME, rb.getString("score"));
-            changeLook.setText(rb.getString("chLook"));
             changeLanguage.setText(rb.getString("chLanguage"));
-            changeToPL.putValue(Action.NAME, rb.getString("pl"));
-            changeToEN.putValue(Action.NAME, rb.getString("en"));
+            changeLook.setText(rb.getString("chLook"));
+            //exitAction.putValue(Action.NAME, rb.getString("exit"));
+            //scoreAction.putValue(Action.NAME, rb.getString("score"));
+            //changeToPLAction.putValue(Action.NAME, rb.getString("pl"));
+            //changeToENAction.putValue(Action.NAME, rb.getString("en"));
         });
-    }
-
-
-    public class chLook extends AbstractAction {
-
-        String plaf;
-
-        public chLook(String look, Icon icon) {
-            super(look, icon);
-
-            switch (look) {
-                case "Look 1":
-                    plaf = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
-                    break;
-                case "Look 2":
-                    plaf = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
-                    break;
-                case "Look 3":
-                    plaf = "javax.swing.plaf.metal.MetalLookAndFeel";
-                    break;
-                default:
-                    plaf = UIManager.getSystemLookAndFeelClassName();
-            }
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-
-            try {
-                UIManager.setLookAndFeel(plaf);
-            } catch (ClassNotFoundException | InstantiationException | UnsupportedLookAndFeelException | IllegalAccessException e1) {
-                LOGGER.log(Level.WARNING, "plaf.change", e);
-            }
-            frame.loadUILook();
-            SwingUtilities.updateComponentTreeUI(frame);
-        }
-    }
-
-    public synchronized void addZmienJezykListener(ZmienJezykListener l) {
-        zmienJezykListeners.add(l);
-        l.changeLocal(new ZmienJezykEvent(this, rb));
-    }
-
-    public synchronized void removeZmienJezykListener(ZmienJezykListener l) {
-        zmienJezykListeners.remove(l);
-    }
-
-    private synchronized void fireZmianaJezykaEvent() {
-        ZmienJezykEvent event = new ZmienJezykEvent(this, rb);
-        for (ZmienJezykListener l : zmienJezykListeners) l.changeLocal(event);
     }
 
 }

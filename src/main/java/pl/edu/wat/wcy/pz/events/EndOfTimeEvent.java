@@ -1,24 +1,24 @@
 package pl.edu.wat.wcy.pz.events;
 
-import pl.edu.wat.wcy.pz.checkers.Gracz;
+import pl.edu.wat.wcy.pz.checkers.Player;
 
 import java.util.EventObject;
 
-public class ZmienKolejEvent extends EventObject {
-    Gracz aktualnyGracz;
-
+public class EndOfTimeEvent extends EventObject {
     /**
      * Constructs a prototypical Event.
      *
      * @param source The object on which the Event initially occurred.
      * @throws IllegalArgumentException if source is null.
      */
-    public ZmienKolejEvent(Object source, Gracz aktualnyGracz) {
+    private Player palyer;
+
+    public EndOfTimeEvent(Object source, Player player) {
         super(source);
-        this.aktualnyGracz = aktualnyGracz;
+        this.palyer = player;
     }
 
-    public Gracz getAktualnyGracz() {
-        return aktualnyGracz;
+    public Player getPalyer() {
+        return palyer;
     }
 }

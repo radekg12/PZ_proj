@@ -16,12 +16,12 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class TreeViewer {
-    private static final Logger LOGGER = Logger.getLogger(TreeViewer.class.getSimpleName(), "LogsMessages");
+public class AvatarXML {
+    private static final Logger LOGGER = Logger.getLogger(AvatarXML.class.getSimpleName(), "LogsMessages");
     private HashMap<String, String> avatarsHashMap = new HashMap<>();
 
 
-    public TreeViewer() {
+    public AvatarXML() {
         try {
             DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
             domFactory.setValidating(true);
@@ -47,8 +47,6 @@ public class TreeViewer {
                 }
             });
 
-
-            //Document doc = builder.parse("avatars.xml");
             String s = getClass().getClassLoader().getResource("avatars.xml").getPath();
             File file = new File(s);
             Document doc = builder.parse(file);

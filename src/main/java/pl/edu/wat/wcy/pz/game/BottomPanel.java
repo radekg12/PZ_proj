@@ -1,9 +1,10 @@
 package pl.edu.wat.wcy.pz.game;
 
-import pl.edu.wat.wcy.pz.checkers.Gra;
+import pl.edu.wat.wcy.pz.actions.ChangeLanguageAction;
+import pl.edu.wat.wcy.pz.actions.HomePanelAction;
+import pl.edu.wat.wcy.pz.checkers.CheckersGame;
 import pl.edu.wat.wcy.pz.events.*;
-import pl.edu.wat.wcy.pz.frame.OknoGlowne;
-import pl.edu.wat.wcy.pz.frame.StronaStartowa;
+import pl.edu.wat.wcy.pz.frame.MainFrame;
 import pl.edu.wat.wcy.pz.listeners.*;
 
 import javax.swing.*;
@@ -12,22 +13,22 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-public class DolnaBelka extends JPanel implements ZmienKolejListener, ZmienJezykListener, WygranaListener, KoniecCzasuListener {
-    //private static final Logger LOGGER = Logger.getLogger(pl.edu.wat.wcy.pz.game.DolnaBelka.class.getSimpleName(), "LogsMessages");
+public class BottomPanel extends JPanel implements ChangeTurnListener, ChangeLanguageListener, WinListener, EndOfTimeListener {
+    //private static final Logger LOGGER = Logger.getLogger(pl.edu.wat.wcy.pz.game.BottomPanel.class.getSimpleName(), "LogsMessages");
     private JLabel label1, label2;
     private JButton replayButton, homeButton;
     private String turnString, winString, endTimeString;
-    private Gra gra;
-    private OknoGlowne frame;
+    private CheckersGame checkersGame;
+    private MainFrame frame;
     private AbstractAction replayAction, homeAction;
     private ArrayList<ReplayListener> replayListeners = new ArrayList<>();
 
 
-    public DolnaBelka(OknoGlowne frame, Gra gra) {
+    public BottomPanel(MainFrame frame, CheckersGame checkersGame) {
         setLayout(new GridLayout(2, 2));
-        gra.addZmienKolejListener(this);
-        gra.addWygranaListener(this);
-        this.gra = gra;
+        checkersGame.addChangeTurnListener(this);
+        checkersGame.addWinListener(this);
+        this.checkersGame = checkersGame;
         label1 = new JLabel();
         label2 = new JLabel();
         label1.setHorizontalAlignment(JLabel.LEFT);
@@ -41,18 +42,14 @@ public class DolnaBelka extends JPanel implements ZmienKolejListener, ZmienJezyk
                 fireReplayEvent();
             }
         });
-        homeButton = new JButton(homeAction = new AbstractAction(null, new ImageIcon(getClass().getClassLoader().getResource("icons/home_24.png"))) {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.zmianaOkna(new StronaStartowa(frame));
-            }
-        });
+        AbstractAction homeAction = new HomePanelAction(frame);
+        homeButton = new JButton(homeAction);
         replayButton.setVisible(false);
         homeButton.setVisible(false);
         replayButton.setHorizontalAlignment(JLabel.RIGHT);
         homeButton.setHorizontalAlignment(JLabel.RIGHT);
-        label1.setText(gra.getAktualnyGracz().getNazwa() + "  <- " + turnString);
-        frame.getMenu().addZmienJezykListener(this);
+        label1.setText(checkersGame.getCurrentPlayer().getName() + "  <- " + turnString);
+        ChangeLanguageAction.addChangeLanguageListener(this);
         this.frame = frame;
         initGUI();
     }
@@ -68,39 +65,39 @@ public class DolnaBelka extends JPanel implements ZmienKolejListener, ZmienJezyk
 
 
     @Override
-    public void zmienKolej(ZmienKolejEvent event) {
+    public void changeTurn(ChangeTurnEvent event) {
         SwingUtilities.invokeLater(() -> {
-            label1.setText(event.getAktualnyGracz().getNazwa() + "  <- " + turnString);
+            label1.setText(event.getCurrentPlayer().getName() + "  <- " + turnString);
             revalidate();
         });
     }
 
     @Override
-    public void changeLocal(ZmienJezykEvent event) {
+    public void changeLocal(ChangeLanguageEvent event) {
         SwingUtilities.invokeLater(() -> {
             ResourceBundle rb = event.getRb();
             turnString = rb.getString("turnString");
-            label1.setText(gra.getAktualnyGracz().getNazwa() + "  <- " + turnString);
+            label1.setText(checkersGame.getCurrentPlayer().getName() + "  <- " + turnString);
             winString = rb.getString("winString");
             endTimeString = rb.getString("endTime");
             replayAction.putValue(Action.NAME, rb.getString("replay"));
-            homeAction.putValue(Action.NAME, rb.getString("homePage"));
+            //homeAction.putValue(Action.NAME, rb.getString("homePage"));
         });
     }
 
 
     @Override
-    public void wygrana(WygranaEvent event) {
-        SwingUtilities.invokeLater(() -> label1.setText(event.getWygrany().getNazwa() + "  " + winString + " ! ! ! "));
+    public void win(WinEvent event) {
+        SwingUtilities.invokeLater(() -> label1.setText(event.getWonPlayer().getName() + "  " + winString + " ! ! ! "));
         replayButton.setVisible(true);
         homeButton.setVisible(true);
         repaint();
     }
 
     @Override
-    public void koniecCzasu(KoniecCzasuEvent event) {
+    public void endOfTime(EndOfTimeEvent event) {
         SwingUtilities.invokeLater(() -> {
-            label2.setText(event.getPalyer().getNazwa() + "  " + endTimeString);
+            label2.setText(event.getPalyer().getName() + "  " + endTimeString);
             repaint();
         });
     }
@@ -115,6 +112,6 @@ public class DolnaBelka extends JPanel implements ZmienKolejListener, ZmienJezyk
 
     private synchronized void fireReplayEvent() {
         ReplayEvent event = new ReplayEvent(this);
-        for (ReplayListener l : replayListeners) l.clean(event);
+        for (ReplayListener l : replayListeners) l.replay(event);
     }
 }

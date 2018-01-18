@@ -1,45 +1,50 @@
 package pl.edu.wat.wcy.pz.exchangerate;
 
-import pl.edu.wat.wcy.pz.events.ZmienJezykEvent;
-import pl.edu.wat.wcy.pz.frame.OknoGlowne;
-import pl.edu.wat.wcy.pz.listeners.ZmienJezykListener;
+import pl.edu.wat.wcy.pz.actions.ChangeLanguageAction;
+import pl.edu.wat.wcy.pz.events.ChangeLanguageEvent;
+import pl.edu.wat.wcy.pz.frame.MainFrame;
+import pl.edu.wat.wcy.pz.listeners.ChangeLanguageListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.UnknownHostException;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PanelNotowania extends JComponent implements ZmienJezykListener {
-    private Logger LOGGER = Logger.getLogger(PanelNotowania.class.getSimpleName(), "LogsMessages");
-    private JLabel tytul, date, not1, imageLabel;
+public class ExchangeRatePanel extends JComponent implements ChangeLanguageListener {
+    private Logger LOGGER = Logger.getLogger(ExchangeRatePanel.class.getSimpleName(), "LogsMessages");
+    private JLabel titleLabel, dateLabel, rateLabel, imageLabel;
     private String base, res;
     private ImageIcon exchangeRateImage;
 
-    public PanelNotowania(OknoGlowne frame) {
+    public ExchangeRatePanel(MainFrame frame) {
         setLayout(new GridBagLayout());
-        tytul = new JLabel();
-        date = new JLabel(" ");
-        not1 = new JLabel(" ");
+        titleLabel = new JLabel();
+        dateLabel = new JLabel(" ");
+        rateLabel = new JLabel(" ");
         imageLabel = new JLabel(" ");
         loadProperties();
 
         new SwingWorker<Void, Void>() {
             @Override
-            protected Void doInBackground() throws Exception {
+            protected Void doInBackground() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
                 WebClient client = new WebClient();
                 WebApiResponse xxx;
                 try {
                     xxx = client.getResponse(base);
                     Method method = xxx.getRates().getClass().getMethod("get" + res);
-                    not1.setText("1 " + base + " = " + method.invoke(xxx.getRates()) + " " + res);
-                    date.setText(xxx.getDate());
-                } catch (IOException e) {
+                    rateLabel.setText("1 " + base + " = " + method.invoke(xxx.getRates()) + " " + res);
+                    dateLabel.setText(xxx.getDate());
+                } catch (UnknownHostException e) {
                     LOGGER.log(Level.WARNING, "rest.open", e);
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "io.open", e);
                 }
                 LOGGER.info("rest.openInfo");
                 return null;
@@ -59,7 +64,7 @@ public class PanelNotowania extends JComponent implements ZmienJezykListener {
             }
         }.execute();
 
-        frame.getMenu().addZmienJezykListener(this);
+        ChangeLanguageAction.addChangeLanguageListener(this);
         initGUI();
     }
 
@@ -73,20 +78,20 @@ public class PanelNotowania extends JComponent implements ZmienJezykListener {
             add(imageLabel, c);
 
             c.gridy = 1;
-            add(tytul, c);
+            add(titleLabel, c);
 
             c.gridy = 2;
-            add(date, c);
+            add(dateLabel, c);
 
             c.gridy = 3;
-            add(not1, c);
+            add(rateLabel, c);
         });
     }
 
     @Override
-    public void changeLocal(ZmienJezykEvent event) {
+    public void changeLocal(ChangeLanguageEvent event) {
         ResourceBundle rb = event.getRb();
-        tytul.setText(rb.getString("exchangeRates"));
+        titleLabel.setText(rb.getString("exchangeRates"));
     }
 
     private void loadProperties() {
