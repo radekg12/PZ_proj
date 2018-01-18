@@ -111,9 +111,7 @@ public class GamePanel extends JPanel implements WinListener, ChangeLanguageList
                 try {
                     database.saveScore(player1, player2);
                 } catch (TooShortGameException e) {
-                    //TODO
-                    JOptionPane optionPane = new JOptionPane();
-                    optionPane.showMessageDialog(null,message );
+                    JOptionPane.showMessageDialog(null, message);
                 } catch (SQLException e) {
                     LOGGER.log(Level.WARNING, "db.save", e);
                 }
@@ -127,6 +125,6 @@ public class GamePanel extends JPanel implements WinListener, ChangeLanguageList
     @Override
     public void changeLocal(ChangeLanguageEvent event) {
         ResourceBundle rb = event.getRb();
-        message=rb.getString("dialogMessage");
+        message = rb.getString("dialogMessage");
     }
 }

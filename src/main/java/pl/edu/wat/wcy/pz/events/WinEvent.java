@@ -17,9 +17,9 @@ public class WinEvent extends EventObject {
     private Player lostPlayer;
     private CheckersGame checkersGame;
 
-    public WinEvent(Object source, Player wygrany, Player lostPlayer) {
+    public WinEvent(Object source, Player wonPlayer, Player lostPlayer) {
         super(source);
-        this.wonPlayer = wygrany;
+        this.wonPlayer = wonPlayer;
         this.lostPlayer = lostPlayer;
         this.checkersGame = (CheckersGame) source;
     }

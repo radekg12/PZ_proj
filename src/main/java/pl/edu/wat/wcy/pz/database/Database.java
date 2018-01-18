@@ -95,7 +95,7 @@ public class Database {
         Player p1, p2;
         String date, p1ID = null, p2ID = null;
 
-        String selectGame = "SELECT TOP 3 *  FROM Game ORDER BY date DESC";
+        String selectGame = "SELECT TOP 4 *  FROM Game ORDER BY date DESC";
 
         rs = stat.executeQuery(selectGame);
         int i = 0;
@@ -106,7 +106,7 @@ public class Database {
         for (ScoreGame wg : scoreGames) {
             p1 = getPlayer(wg.getPlayer1ID());
             p2 = getPlayer(wg.getPlayer2ID());
-            data.addWynik(new Score(p1, p2, wg.getDate()));
+            data.addScore(new Score(p1, p2, wg.getDate()));
             data.fireTableDataChanged();
         }
         LOGGER.info("db.readInfo");

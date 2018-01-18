@@ -31,7 +31,7 @@ public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListen
     private Player player;
     private boolean active;
     private Color color, activeColor, foreground, foreground2;
-    private JLabel nazwaLabel, avatarLabel, timerLabel;
+    private JLabel nameLabel, avatarLabel, timerLabel;
     private boolean won;
     private BufferedImage medal;
     private ImageIcon hourglass, timeEnd;
@@ -54,8 +54,8 @@ public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListen
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "image.open", e);
         }
-        nazwaLabel = new JLabel(player.getName());
-        nazwaLabel.setHorizontalAlignment(JLabel.CENTER);
+        nameLabel = new JLabel(player.getName());
+        nameLabel.setHorizontalAlignment(JLabel.CENTER);
         avatarLabel = new JLabel(new ImageIcon(player.getAvatar()));
         tmpTime = time;
         timerLabel = new JLabel(String.valueOf(tmpTime), hourglass, JLabel.LEFT);
@@ -85,7 +85,7 @@ public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListen
     public void initGUI() {
         SwingUtilities.invokeLater(() -> {
             setLayout(new BorderLayout());
-            add(nazwaLabel, BorderLayout.NORTH);
+            add(nameLabel, BorderLayout.NORTH);
             add(avatarLabel, BorderLayout.CENTER);
             if (!active)
                 //timerLabel.setIcon(hourglass);
@@ -180,7 +180,7 @@ public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListen
         player.setWon(false);
         player.setMoves(0);
         player.setTime(0);
-        tmpTime=time;
+        tmpTime = time;
         active = player.getK() == 1;
         repaint();
     }

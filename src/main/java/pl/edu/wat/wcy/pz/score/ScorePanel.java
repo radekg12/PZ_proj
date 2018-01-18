@@ -35,7 +35,7 @@ public class ScorePanel extends JFrame implements ChangeLanguageListener {
         setLayout(new GridLayout(1, 1));
         model = new ScoreTableModel(result, frame);
         table = new JTable(model);
-        WynikiCellRenderer renderer = new WynikiCellRenderer();
+        ScoreCellRenderer renderer = new ScoreCellRenderer();
         table.setDefaultRenderer(Object.class, renderer);
         table.setRowHeight(avatarSize + 20);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -93,9 +93,9 @@ public class ScorePanel extends JFrame implements ChangeLanguageListener {
         }
     }
 
-    class WynikiCellRenderer extends DefaultTableCellRenderer {
+    class ScoreCellRenderer extends DefaultTableCellRenderer {
 
-        public WynikiCellRenderer() {
+        public ScoreCellRenderer() {
             setHorizontalAlignment(RIGHT);
         }
 
@@ -103,9 +103,16 @@ public class ScorePanel extends JFrame implements ChangeLanguageListener {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
             JPanel panel = new JPanel();
+            panel.setLayout(new GridBagLayout());
             panel.setOpaque(false);
+            GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 0;
+            c.gridy = 0;
+            c.weightx = 4;
+            c.weighty = 1;
+
             JLabel l = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            panel.add(l);
+            panel.add(l, c);
             l.setHorizontalAlignment(JLabel.LEFT);
             l.setVerticalAlignment(JLabel.CENTER);
             l.setHorizontalTextPosition(JLabel.RIGHT);
@@ -127,7 +134,9 @@ public class ScorePanel extends JFrame implements ChangeLanguageListener {
                 }
                 if (((Player) value).isWon()) {
                     Image icon = medalImg.getScaledInstance(medalSize, medalSize, medalImg.getType());
-                    panel.add(new JLabel(new ImageIcon(icon)));
+                    c.gridx = 1;
+                    c.weightx = 1;
+                    panel.add(new JLabel(new ImageIcon(icon)), c);
                 }
 
             }

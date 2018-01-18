@@ -241,9 +241,9 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
             g.fillOval(activePiece.getX() * Piece.getSize() - 3, activePiece.getY() * Piece.getSize() - 3, Piece.getSize() + 6, Piece.getSize() + 6);
         }
 
-        ArrayList<Piece> pionki = new ArrayList<>(currentPlayer.getPieces());
-        pionki.addAll(currentOpponent.getPieces());
-        for (Piece p : pionki) {
+        ArrayList<Piece> pieces = new ArrayList<>(currentPlayer.getPieces());
+        pieces.addAll(currentOpponent.getPieces());
+        for (Piece p : pieces) {
             if (p.isJumpPiece()) {
                 g.setColor(Piece.getJumpColor());
                 g.fillOval(p.getX() * Piece.getSize(), p.getY() * Piece.getSize(), Piece.getSize(), Piece.getSize());
@@ -397,7 +397,7 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
             input = getClass().getClassLoader().getResource(propertiesName).openStream();
 
             properties.load(input);
-            boardSize = Integer.parseInt(properties.getProperty("plansza.liczbaPol"));
+            boardSize = Integer.parseInt(properties.getProperty("board.boardSize"));
         } catch (IOException ex) {
             LOGGER.log(Level.WARNING, "properties.open", ex);
         } finally {

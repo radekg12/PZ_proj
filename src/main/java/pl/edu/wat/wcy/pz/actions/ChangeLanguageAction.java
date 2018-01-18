@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class ChangeLanguageAction extends AbstractAction implements ChangeLanguageListener{
+public class ChangeLanguageAction extends AbstractAction implements ChangeLanguageListener {
     private String language;
     private String country;
     private static Locale locale = Locale.getDefault();
@@ -17,7 +17,7 @@ public class ChangeLanguageAction extends AbstractAction implements ChangeLangua
     private static ArrayList<ChangeLanguageListener> changeLanguageListeners = new ArrayList<>();
 
     public ChangeLanguageAction(String language, String country) {
-        super(language, new ImageIcon(ChangeLookAction.class.getClassLoader().getResource("icons/"+language+"_24.png")));
+        super(language, new ImageIcon(ChangeLookAction.class.getClassLoader().getResource("icons/" + language + "_24.png")));
         this.language = language;
         this.country = country;
         addChangeLanguageListener(this);

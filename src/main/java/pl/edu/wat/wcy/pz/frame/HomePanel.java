@@ -42,7 +42,7 @@ public class HomePanel extends JPanel implements ChangeLanguageListener {
             }
         };
         startButton = new JButton(startAction);
-        exitAction=new ExitAction();
+        exitAction = new ExitAction();
         exitButton = new JButton(exitAction);
         titleLabel = new JLabel();
         titleLabel.setForeground(titleForeground);

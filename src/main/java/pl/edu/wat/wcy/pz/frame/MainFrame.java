@@ -135,8 +135,7 @@ public class MainFrame extends JFrame implements ChangeLanguageListener {
 
     private class MyDialog extends WindowAdapter implements ChangeLanguageListener {
         private JButton cancelButton;
-        //private JButton zapiszButton = new JButton();
-        private JButton zamknijButton = new JButton();
+        private JButton closeButton = new JButton();
         private JButton[] buttons;
         private String message, title;
         private Icon alertIcon;
@@ -145,7 +144,7 @@ public class MainFrame extends JFrame implements ChangeLanguageListener {
         private AbstractAction cancelAction;
 
         MyDialog() {
-            zamknijButton.addActionListener(new ExitAction());
+            closeButton.addActionListener(new ExitAction());
             cancelAction = new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -153,8 +152,7 @@ public class MainFrame extends JFrame implements ChangeLanguageListener {
                 }
             };
             cancelButton = new JButton(cancelAction);
-            //buttons = new JButton[]{cancelButton, zapiszButton, zamknijButton};
-            buttons = new JButton[]{cancelButton, zamknijButton};
+            buttons = new JButton[]{cancelButton, closeButton};
             alertIcon = new ImageIcon(getClass().getClassLoader().getResource("icons/warning_2.png"));
             ChangeLanguageAction.addChangeLanguageListener(this);
 
@@ -181,8 +179,7 @@ public class MainFrame extends JFrame implements ChangeLanguageListener {
             message = (rb.getString("alert.statement"));
             title = (rb.getString("alert.title"));
             cancelButton.setText(rb.getString("cancel"));
-            zamknijButton.setText(rb.getString("exit"));
-            //zapiszButton.setText(rb.getString("save"));
+            closeButton.setText(rb.getString("exit"));
             optionPane = new JOptionPane(
                     message, JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION, alertIcon, buttons, buttons[1]
             );

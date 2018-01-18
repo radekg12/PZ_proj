@@ -8,8 +8,6 @@ import pl.edu.wat.wcy.pz.events.ChangeLanguageEvent;
 import pl.edu.wat.wcy.pz.listeners.ChangeLanguageListener;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 

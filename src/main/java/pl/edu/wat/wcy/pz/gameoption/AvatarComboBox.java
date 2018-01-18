@@ -30,10 +30,10 @@ public class AvatarComboBox extends JPanel {
         comboBox = new JComboBox();
         setOpaque(false);
         ComboBoxRenderer renderer = new ComboBoxRenderer();
-        Dimension avatarDimention = new Dimension(avatarSize, avatarSize);
-        setMinimumSize(avatarDimention);
-        renderer.setPreferredSize(avatarDimention);
-        comboBox.setSize(avatarDimention);
+        Dimension avatarDimension = new Dimension(avatarSize, avatarSize);
+        setMinimumSize(avatarDimension);
+        renderer.setPreferredSize(avatarDimension);
+        comboBox.setSize(avatarDimension);
         comboBox.setRenderer(renderer);
         comboBox.setMaximumRowCount(3);
         comboBox.setBorder(BorderFactory.createEmptyBorder());

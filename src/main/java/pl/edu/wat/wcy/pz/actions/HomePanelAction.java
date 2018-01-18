@@ -14,7 +14,7 @@ public class HomePanelAction extends AbstractAction implements ChangeLanguageLis
 
     public HomePanelAction(MainFrame frame) {
         super(null, new ImageIcon(HomePanel.class.getClassLoader().getResource("icons/home_24.png")));
-        this.frame=frame;
+        this.frame = frame;
         ChangeLanguageAction.addChangeLanguageListener(this);
     }
 

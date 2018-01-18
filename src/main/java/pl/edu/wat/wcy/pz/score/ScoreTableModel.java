@@ -20,7 +20,7 @@ public class ScoreTableModel extends AbstractTableModel {
     }
 
 
-    public void addWynik(Score country) {
+    public void addScore(Score country) {
         if (this.scores != null) {
             this.scores.add(country);
         }

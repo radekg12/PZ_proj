@@ -78,18 +78,16 @@ public class Player {
         return won;
     }
 
-    public Player setWon(boolean won) {
+    public void setWon(boolean won) {
         this.won = won;
-        return this;
     }
 
     public String getAvatarName() {
         return avatarName;
     }
 
-    public Player setAvatarName(String avatarName) {
+    public void setAvatarName(String avatarName) {
         this.avatarName = avatarName;
-        return this;
     }
 
     public void addTime(int x) {
@@ -112,18 +110,15 @@ public class Player {
         return moves;
     }
 
-    public Player setColor(Color color) {
+    public void setColor(Color color) {
         this.color = color;
-        return this;
     }
 
-    public Player setTime(int time) {
+    public void setTime(int time) {
         this.time = time;
-        return this;
     }
 
-    public Player setMoves(int moves) {
+    public void setMoves(int moves) {
         this.moves = moves;
-        return this;
     }
 }
