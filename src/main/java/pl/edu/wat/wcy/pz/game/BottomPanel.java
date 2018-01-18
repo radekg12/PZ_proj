@@ -54,7 +54,7 @@ public class BottomPanel extends JPanel implements ChangeTurnListener, ChangeLan
         initGUI();
     }
 
-    public void initGUI() {
+    private void initGUI() {
         SwingUtilities.invokeLater(() -> {
             add(label1);
             add(replayButton);

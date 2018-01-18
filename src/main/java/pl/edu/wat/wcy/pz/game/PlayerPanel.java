@@ -82,7 +82,7 @@ public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListen
         initGUI();
     }
 
-    public void initGUI() {
+    private void initGUI() {
         SwingUtilities.invokeLater(() -> {
             setLayout(new BorderLayout());
             add(nameLabel, BorderLayout.NORTH);

@@ -41,7 +41,7 @@ public class AvatarComboBox extends JPanel {
         new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() {
-                avatarXML = new AvatarXML();
+                avatarXML = AvatarXML.getInstance();
                 return null;
             }
         }.execute();

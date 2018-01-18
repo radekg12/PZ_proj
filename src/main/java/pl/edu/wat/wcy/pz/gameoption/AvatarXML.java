@@ -18,10 +18,11 @@ import java.util.logging.Logger;
 
 public class AvatarXML {
     private static final Logger LOGGER = Logger.getLogger(AvatarXML.class.getSimpleName(), "LogsMessages");
+    private static AvatarXML ourInstance = new AvatarXML();
     private HashMap<String, String> avatarsHashMap = new HashMap<>();
 
 
-    public AvatarXML() {
+    private AvatarXML() {
         try {
             DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
             domFactory.setValidating(true);
@@ -62,6 +63,10 @@ public class AvatarXML {
             LOGGER.log(Level.WARNING, "xml.open", e);
         }
         LOGGER.info("xml.openInfo");
+    }
+
+    public static AvatarXML getInstance() {
+        return ourInstance;
     }
 
     public HashMap<String, String> getAvatarsHashMap() {
