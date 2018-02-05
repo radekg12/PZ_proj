@@ -5,11 +5,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Piece {
+public class Piece implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(Piece.class.getSimpleName(), "LogsMessages");
     private int x;
     private int y;
@@ -217,5 +218,10 @@ public class Piece {
                 }
             }
         }
+    }
+
+
+    public static Logger getLOGGER() {
+        return LOGGER;
     }
 }

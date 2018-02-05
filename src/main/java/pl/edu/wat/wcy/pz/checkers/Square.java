@@ -3,11 +3,12 @@ package pl.edu.wat.wcy.pz.checkers;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Square {
+public class Square implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(Square.class.getSimpleName(), "LogsMessages");
     private static Color lightColor, darkColor, moveColor, jumpColor;
     private static int size;
@@ -142,5 +143,9 @@ public class Square {
                 }
             }
         }
+    }
+
+    public static Logger getLOGGER() {
+        return LOGGER;
     }
 }

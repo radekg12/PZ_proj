@@ -1,13 +1,15 @@
 package pl.edu.wat.wcy.pz.checkers;
 
+import javax.swing.*;
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Player {
+public class Player implements Serializable {
     //private static final Logger LOGGER = Logger.getLogger(pl.edu.wat.wcy.pz.checkers.Player.class.getSimpleName(), "LogsMessages");
     private String name;
     private ArrayList<Piece> pieces = new ArrayList<>();
-    private Image avatar;
+    private ImageIcon avatar;
     private String avatarName;
     private Color color;
     private int k;
@@ -20,7 +22,7 @@ public class Player {
 
     public Player(String name, Image avatar, String avatarName, int k) {
         this.name = name;
-        this.avatar = avatar;
+        this.avatar = new ImageIcon(avatar);
         this.avatarName = avatarName;
         this.k = k;
         time = 0;
@@ -65,11 +67,11 @@ public class Player {
         this.k = k;
     }
 
-    public Image getAvatar() {
+    public ImageIcon getAvatar() {
         return avatar;
     }
 
-    public Player setAvatar(Image avatar) {
+    public Player setAvatar(ImageIcon avatar) {
         this.avatar = avatar;
         return this;
     }
@@ -121,4 +123,6 @@ public class Player {
     public void setMoves(int moves) {
         this.moves = moves;
     }
+
+
 }

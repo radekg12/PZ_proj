@@ -26,13 +26,11 @@ public class GamePanel extends JPanel implements WinListener, ChangeLanguageList
     private PlayerPanel panel2;
     private TopPanel topPanel;
     private BottomPanel bottomPanel;
-    private MainFrame frame;
     private int time;
     private String message;
 
     public GamePanel(MainFrame frame, Player player1, Player player2, int time) {
         super(new GridBagLayout());
-        this.frame = frame;
         this.player1 = player1;
         this.player2 = player2;
         this.time = time;
@@ -126,5 +124,90 @@ public class GamePanel extends JPanel implements WinListener, ChangeLanguageList
     public void changeLocal(ChangeLanguageEvent event) {
         ResourceBundle rb = event.getRb();
         message = rb.getString("dialogMessage");
+    }
+
+    public static Logger getLOGGER() {
+        return LOGGER;
+    }
+
+    public CheckersGame getCheckersGame() {
+        return checkersGame;
+    }
+
+    public GamePanel setCheckersGame(CheckersGame checkersGame) {
+        this.checkersGame = checkersGame;
+        return this;
+    }
+
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    public GamePanel setPlayer1(Player player1) {
+        this.player1 = player1;
+        return this;
+    }
+
+    public Player getPlayer2() {
+        return player2;
+    }
+
+    public GamePanel setPlayer2(Player player2) {
+        this.player2 = player2;
+        return this;
+    }
+
+    public PlayerPanel getPanel1() {
+        return panel1;
+    }
+
+    public GamePanel setPanel1(PlayerPanel panel1) {
+        this.panel1 = panel1;
+        return this;
+    }
+
+    public PlayerPanel getPanel2() {
+        return panel2;
+    }
+
+    public GamePanel setPanel2(PlayerPanel panel2) {
+        this.panel2 = panel2;
+        return this;
+    }
+
+    public TopPanel getTopPanel() {
+        return topPanel;
+    }
+
+    public GamePanel setTopPanel(TopPanel topPanel) {
+        this.topPanel = topPanel;
+        return this;
+    }
+
+    public BottomPanel getBottomPanel() {
+        return bottomPanel;
+    }
+
+    public GamePanel setBottomPanel(BottomPanel bottomPanel) {
+        this.bottomPanel = bottomPanel;
+        return this;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public GamePanel setTime(int time) {
+        this.time = time;
+        return this;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public GamePanel setMessage(String message) {
+        this.message = message;
+        return this;
     }
 }

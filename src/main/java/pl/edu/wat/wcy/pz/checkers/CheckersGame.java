@@ -1,28 +1,27 @@
 package pl.edu.wat.wcy.pz.checkers;
 
-import pl.edu.wat.wcy.pz.events.ChangeTurnEvent;
-import pl.edu.wat.wcy.pz.events.EndOfTimeEvent;
-import pl.edu.wat.wcy.pz.events.ReplayEvent;
-import pl.edu.wat.wcy.pz.events.WinEvent;
+import pl.edu.wat.wcy.pz.actions.ChangeLanguageAction;
+import pl.edu.wat.wcy.pz.actions.ExitAction;
+import pl.edu.wat.wcy.pz.actions.SaveAction;
+import pl.edu.wat.wcy.pz.events.*;
 import pl.edu.wat.wcy.pz.frame.MainFrame;
 import pl.edu.wat.wcy.pz.listeners.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CheckersGame extends JComponent implements EndOfTimeListener, ReplayListener {
+public class CheckersGame extends JComponent implements EndOfTimeListener, ReplayListener, ChangeLanguageListener {
     private static final Logger LOGGER = Logger.getLogger(CheckersGame.class.getSimpleName(), "LogsMessages");
-    private MainFrame frame;
     private int boardSize;
     private Piece activePiece;
     private Piece[][] pieceTab;
@@ -31,11 +30,21 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
     private boolean start;
     private ArrayList<ChangeTurnListener> changeTurnListeners = new ArrayList<>();
     private ArrayList<WinListener> winListeners = new ArrayList<>();
+    private AbstractAction loadAction;
 
 
     public CheckersGame(MainFrame frame, Player player1, Player player2) {
+        loadAction = new AbstractAction(null, new ImageIcon(ExitAction.class.getClassLoader().getResource("icons/load_24.png"))) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadGame();
+            }
+        };
+        frame.getMenu().getFile().add(new SaveAction());
+        SaveAction.setCheckersGame(this);
+        frame.getMenu().getFile().add(loadAction);
+        ChangeLanguageAction.addChangeLanguageListener(this);
         loadProperties();
-        this.frame = frame;
         pieceTab = new Piece[boardSize][boardSize];
         board = new Square[boardSize][boardSize];
         addMouseListener(new Movements());
@@ -290,6 +299,97 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
     }
 
 
+    public int getBoardSize() {
+        return boardSize;
+    }
+
+    public CheckersGame setBoardSize(int boardSize) {
+        this.boardSize = boardSize;
+        return this;
+    }
+
+    public Piece getActivePiece() {
+        return activePiece;
+    }
+
+    public CheckersGame setActivePiece(Piece activePiece) {
+        this.activePiece = activePiece;
+        return this;
+    }
+
+    public Piece[][] getPieceTab() {
+        return pieceTab;
+    }
+
+    public CheckersGame setPieceTab(Piece[][] pieceTab) {
+        this.pieceTab = pieceTab;
+        return this;
+    }
+
+    public Square[][] getBoard() {
+        return board;
+    }
+
+    public CheckersGame setBoard(Square[][] board) {
+        this.board = board;
+        return this;
+    }
+
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    public CheckersGame setPlayer1(Player player1) {
+        this.player1 = player1;
+        return this;
+    }
+
+    public Player getPlayer2() {
+        return player2;
+    }
+
+    public CheckersGame setPlayer2(Player player2) {
+        this.player2 = player2;
+        return this;
+    }
+
+    public CheckersGame setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+        return this;
+    }
+
+    public CheckersGame setCurrentOpponent(Player currentOpponent) {
+        this.currentOpponent = currentOpponent;
+        return this;
+    }
+
+    public boolean isStart() {
+        return start;
+    }
+
+    public CheckersGame setStart(boolean start) {
+        this.start = start;
+        return this;
+    }
+
+    public ArrayList<ChangeTurnListener> getChangeTurnListeners() {
+        return changeTurnListeners;
+    }
+
+    public CheckersGame setChangeTurnListeners(ArrayList<ChangeTurnListener> changeTurnListeners) {
+        this.changeTurnListeners = changeTurnListeners;
+        return this;
+    }
+
+    public ArrayList<WinListener> getWinListeners() {
+        return winListeners;
+    }
+
+    public CheckersGame setWinListeners(ArrayList<WinListener> winListeners) {
+        this.winListeners = winListeners;
+        return this;
+    }
+
     private void jump(int i, int j) {
         int vi = (activePiece.getX() - i) / Math.abs(activePiece.getX() - i);
         int vj = (activePiece.getY() - j) / Math.abs(activePiece.getY() - j);
@@ -326,15 +426,6 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
         changeTurn();
         repaint();
     }
-
-    public Frame getFrame() {
-        return frame;
-    }
-
-    public void setFrame(MainFrame frame) {
-        this.frame = frame;
-    }
-
 
     public synchronized void addWinListener(WinListener l) {
         winListeners.add(l);
@@ -389,6 +480,49 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
         repaint();
     }
 
+    public void loadGame() {
+        //TODO
+        try {
+            FileInputStream fileIn = new FileInputStream("game.ser");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            pieceTab = (Piece[][]) in.readObject();
+            in.close();
+            fileIn.close();
+
+//            fileIn = new FileInputStream("player.ser");
+//            in = new ObjectInputStream(fileIn);
+//            currentPlayer = (Player) in.readObject();
+//            in.close();
+//            fileIn.close();
+//
+//            fileIn = new FileInputStream("opponent.ser");
+//            in = new ObjectInputStream(fileIn);
+//            currentOpponent = (Player) in.readObject();
+//            in.close();
+//            fileIn.close();
+
+        } catch (IOException i) {
+            i.printStackTrace();
+            return;
+        } catch (ClassNotFoundException c) {
+            System.out.println("Class not found");
+            c.printStackTrace();
+            return;
+        }
+        player1.getPieces().clear();
+        player2.getPieces().clear();
+        for (Piece[] pp : pieceTab)
+            for (Piece p : pp) {
+                if (p != null)
+                    if (p.getK() == -1) player1.getPieces().add(p);
+                    else player2.getPieces().add(p);
+            }
+        activePiece = null;
+        checkPiecesMove();
+        repaint();
+    }
+
+
     private void loadProperties() {
         Properties properties = new Properties();
         InputStream input = null;
@@ -409,6 +543,14 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
                 }
             }
         }
+    }
+
+    @Override
+    public void changeLocal(ChangeLanguageEvent event) {
+        SwingUtilities.invokeLater(() -> {
+            ResourceBundle rb = event.getRb();
+            loadAction.putValue(Action.NAME, rb.getString("load"));
+        });
     }
 
     private class Movements extends MouseAdapter {

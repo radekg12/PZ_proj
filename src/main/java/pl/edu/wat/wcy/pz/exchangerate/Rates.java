@@ -35,6 +35,8 @@ public class Rates {
     @JsonProperty
     private double INR;
     @JsonProperty
+    private double ISK;
+    @JsonProperty
     private double JPY;
     @JsonProperty
     private double KRW;
@@ -196,5 +198,9 @@ public class Rates {
 
     public double getEUR() {
         return EUR;
+    }
+
+    public double getISK() {
+        return ISK;
     }
 }

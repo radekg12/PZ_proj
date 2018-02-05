@@ -34,7 +34,8 @@ public class AvatarXML {
 
                 @Override
                 public void error(SAXParseException exception) {
-                    exception.printStackTrace();
+                    exception.
+                            printStackTrace();
                 }
 
                 @Override

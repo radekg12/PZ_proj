@@ -56,7 +56,7 @@ public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListen
         }
         nameLabel = new JLabel(player.getName());
         nameLabel.setHorizontalAlignment(JLabel.CENTER);
-        avatarLabel = new JLabel(new ImageIcon(player.getAvatar()));
+        avatarLabel = new JLabel(player.getAvatar());
         tmpTime = time;
         timerLabel = new JLabel(String.valueOf(tmpTime), hourglass, JLabel.LEFT);
         timerLabel.setMinimumSize(new Dimension(hourglass.getIconWidth(), hourglass.getIconHeight()));

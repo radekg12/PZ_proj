@@ -16,7 +16,7 @@ public class Menu extends JMenuBar implements ChangeLanguageListener {
     private MainFrame frame;
     private JMenu file, view, changeLook, changeLanguage;
     private JMenuItem look1, look2, look3, exit, chPL, chEN, score;
-    private AbstractAction exitAction, scoreAction, changeToPLAction, changeToENAction;
+    private AbstractAction exitAction, scoreAction, changeToPLAction, changeToENAction, saveAction;
 
 
     public Menu(MainFrame frame) {
@@ -33,6 +33,7 @@ public class Menu extends JMenuBar implements ChangeLanguageListener {
         exit = new JMenuItem(exitAction);
         scoreAction = new ScoreAction(frame);
         score = new JMenuItem(scoreAction);
+        //saveAction = new SaveAction();
 
         changeLook = new JMenu();
         changeLook.setIcon(new ImageIcon(getClass().getClassLoader().getResource("icons/look_24.png")));
@@ -55,6 +56,7 @@ public class Menu extends JMenuBar implements ChangeLanguageListener {
         SwingUtilities.invokeLater(() -> {
             add(file);
             file.add(score);
+            //file.add(saveAction);
             file.add(exit);
 
             add(view);
@@ -92,4 +94,7 @@ public class Menu extends JMenuBar implements ChangeLanguageListener {
         });
     }
 
+    public JMenu getFile() {
+        return file;
+    }
 }
