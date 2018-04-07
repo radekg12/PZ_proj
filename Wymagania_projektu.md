@@ -1,4 +1,4 @@
-#Wymagania projektu: 
+# Wymagania projektu: 
 
 1.	 Aplikacja napisana w Swingu/Java FX; 
 2.	 Aplikacja musi implementować 5 własnych zdarzeń, które w zależności od typu będą świadczyły o wykonaniu dedykowanej logiki, np.  wykrycie brzydkiego słowa w edytorze;
