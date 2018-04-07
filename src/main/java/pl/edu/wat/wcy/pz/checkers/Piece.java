@@ -12,22 +12,13 @@ import java.util.logging.Logger;
 
 public class Piece implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(Piece.class.getSimpleName(), "LogsMessages");
-    private int x;
-    private int y;
     private static int size;
-    private int k;
-    private Color color;
-    private Color activeColor;
-
     static private Color darkColor;
     static private Color darkActiveColor;
     static private Color lightColor;
     static private Color lightActiveColor;
     static private Color jumpColor;
-    private PieceType pieceType;
     private static BufferedImage crown;
-    private boolean movePiece;
-    private boolean jumpPiece;
 
     static {
         loadProperties();
@@ -37,6 +28,15 @@ public class Piece implements Serializable {
             LOGGER.log(Level.WARNING, "image.open", e);
         }
     }
+
+    private int x;
+    private int y;
+    private int k;
+    private Color color;
+    private Color activeColor;
+    private PieceType pieceType;
+    private boolean movePiece;
+    private boolean jumpPiece;
 
     Piece(int x, int y, int k) {
 
@@ -54,6 +54,91 @@ public class Piece implements Serializable {
         }
         movePiece = false;
         jumpPiece = false;
+    }
+
+    public static Color getDarkColor() {
+        return darkColor;
+    }
+
+    public static void setDarkColor(Color darkColor) {
+        Piece.darkColor = darkColor;
+    }
+
+    public static Color getLightColor() {
+        return lightColor;
+    }
+
+    public static void setLightColor(Color lightColor) {
+        Piece.lightColor = lightColor;
+    }
+
+    public static Color getDarkActiveColor() {
+        return darkActiveColor;
+    }
+
+    public static void setDarkActiveColor(Color darkActiveColor) {
+        Piece.darkActiveColor = darkActiveColor;
+    }
+
+    public static Color getLightActiveColor() {
+        return lightActiveColor;
+    }
+
+    public static void setLightActiveColor(Color lightActiveColor) {
+        Piece.lightActiveColor = lightActiveColor;
+    }
+
+    public static int getSize() {
+        return size;
+    }
+
+    public static void setSize(int size) {
+        Piece.size = size;
+    }
+
+    public static BufferedImage getCrown() {
+        return crown;
+    }
+
+    public static void setCrown(BufferedImage crown) {
+        Piece.crown = crown;
+    }
+
+    public static Color getJumpColor() {
+        return jumpColor;
+    }
+
+    public static void setJumpColor(Color jumpColor) {
+        Piece.jumpColor = jumpColor;
+    }
+
+    private static void loadProperties() {
+        Properties properties = new Properties();
+        InputStream input = null;
+        String propertiesName = "config.properties";
+        try {
+            input = Piece.class.getClassLoader().getResource(propertiesName).openStream();
+            properties.load(input);
+            lightColor = Color.decode(properties.getProperty("piece.lightColor"));
+            lightActiveColor = Color.decode(properties.getProperty("piece.lightActiveColor"));
+            darkColor = Color.decode(properties.getProperty("piece.darkColor"));
+            darkActiveColor = Color.decode(properties.getProperty("piece.darkActiveColor"));
+            jumpColor = Color.decode(properties.getProperty("piece.jumpColor"));
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "properties.open", ex);
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    LOGGER.log(Level.WARNING, "properties.close", e);
+                }
+            }
+        }
+    }
+
+    public static Logger getLOGGER() {
+        return LOGGER;
     }
 
     public void setLocation(int x, int y) {
@@ -118,52 +203,12 @@ public class Piece implements Serializable {
         this.movePiece = jumpPiece;
     }
 
-    public static Color getDarkColor() {
-        return darkColor;
-    }
-
-    public static void setDarkColor(Color darkColor) {
-        Piece.darkColor = darkColor;
-    }
-
-    public static Color getLightColor() {
-        return lightColor;
-    }
-
-    public static void setLightColor(Color lightColor) {
-        Piece.lightColor = lightColor;
-    }
-
-    public static Color getDarkActiveColor() {
-        return darkActiveColor;
-    }
-
-    public static void setDarkActiveColor(Color darkActiveColor) {
-        Piece.darkActiveColor = darkActiveColor;
-    }
-
-    public static Color getLightActiveColor() {
-        return lightActiveColor;
-    }
-
-    public static void setLightActiveColor(Color lightActiveColor) {
-        Piece.lightActiveColor = lightActiveColor;
-    }
-
     public Color getActiveColor() {
         return activeColor;
     }
 
     public void setActiveColor(Color activeColor) {
         this.activeColor = activeColor;
-    }
-
-    public static void setSize(int size) {
-        Piece.size = size;
-    }
-
-    public static int getSize() {
-        return size;
     }
 
     public PieceType getPieceType() {
@@ -177,51 +222,5 @@ public class Piece implements Serializable {
     public void changeToQueen() {
         if (k == 1) pieceType = PieceType.LQueen;
         else if (k == -1) pieceType = PieceType.DQueen;
-    }
-
-    public static BufferedImage getCrown() {
-        return crown;
-    }
-
-    public static void setCrown(BufferedImage crown) {
-        Piece.crown = crown;
-    }
-
-    public static Color getJumpColor() {
-        return jumpColor;
-    }
-
-    public static void setJumpColor(Color jumpColor) {
-        Piece.jumpColor = jumpColor;
-    }
-
-    private static void loadProperties() {
-        Properties properties = new Properties();
-        InputStream input = null;
-        String propertiesName = "config.properties";
-        try {
-            input = Piece.class.getClassLoader().getResource(propertiesName).openStream();
-            properties.load(input);
-            lightColor = Color.decode(properties.getProperty("piece.lightColor"));
-            lightActiveColor = Color.decode(properties.getProperty("piece.lightActiveColor"));
-            darkColor = Color.decode(properties.getProperty("piece.darkColor"));
-            darkActiveColor = Color.decode(properties.getProperty("piece.darkActiveColor"));
-            jumpColor = Color.decode(properties.getProperty("piece.jumpColor"));
-        } catch (IOException ex) {
-            LOGGER.log(Level.WARNING, "properties.open", ex);
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "properties.close", e);
-                }
-            }
-        }
-    }
-
-
-    public static Logger getLOGGER() {
-        return LOGGER;
     }
 }

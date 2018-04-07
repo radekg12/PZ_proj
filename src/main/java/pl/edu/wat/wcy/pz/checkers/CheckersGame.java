@@ -72,8 +72,18 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
         return currentPlayer;
     }
 
+    public CheckersGame setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+        return this;
+    }
+
     public Player getCurrentOpponent() {
         return currentOpponent;
+    }
+
+    public CheckersGame setCurrentOpponent(Player currentOpponent) {
+        this.currentOpponent = currentOpponent;
+        return this;
     }
 
     private void generateBoard() {
@@ -195,7 +205,6 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
         }
     }
 
-
     private boolean isOpponent(int x, int y, Piece piece) {
         return piece != null && pieceTab[x][y].getK() != piece.getK();
     }
@@ -237,7 +246,6 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
             currentPlayer.getPieces().stream().filter(p -> p.isMovePiece() && !p.isJumpPiece()).forEach(p -> p.setMovePiece(false));
     }
 
-
     public void paint(Graphics g) {
         super.paintComponents(g);
         paintBoard(g);
@@ -276,7 +284,6 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
         return currentPlayer.getPieces().stream().anyMatch(Piece::isMovePiece);
     }
 
-
     private void paintBoard(Graphics g) {
         for (Square[] pp : board)
             for (Square p : pp) {
@@ -297,7 +304,6 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
 
             }
     }
-
 
     public int getBoardSize() {
         return boardSize;
@@ -350,16 +356,6 @@ public class CheckersGame extends JComponent implements EndOfTimeListener, Repla
 
     public CheckersGame setPlayer2(Player player2) {
         this.player2 = player2;
-        return this;
-    }
-
-    public CheckersGame setCurrentPlayer(Player currentPlayer) {
-        this.currentPlayer = currentPlayer;
-        return this;
-    }
-
-    public CheckersGame setCurrentOpponent(Player currentOpponent) {
-        this.currentOpponent = currentOpponent;
         return this;
     }
 

@@ -104,20 +104,20 @@ public class Player implements Serializable {
         return color;
     }
 
-    public int getTime() {
-        return time;
-    }
-
-    public int getMoves() {
-        return moves;
-    }
-
     public void setColor(Color color) {
         this.color = color;
     }
 
+    public int getTime() {
+        return time;
+    }
+
     public void setTime(int time) {
         this.time = time;
+    }
+
+    public int getMoves() {
+        return moves;
     }
 
     public void setMoves(int moves) {

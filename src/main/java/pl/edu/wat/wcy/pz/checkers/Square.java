@@ -12,6 +12,11 @@ public class Square implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(Square.class.getSimpleName(), "LogsMessages");
     private static Color lightColor, darkColor, moveColor, jumpColor;
     private static int size;
+
+    static {
+        loadProperties();
+    }
+
     private int column;
     private int row;
     private Color squareColor;
@@ -19,64 +24,12 @@ public class Square implements Serializable {
     private boolean moveSquare;
     private boolean jumpSquare;
 
-    static {
-        loadProperties();
-    }
-
     public Square(int column, int row, Color squareColor) {
         this.column = column;
         this.row = row;
         this.squareColor = squareColor;
         occupiedSquare = true;
         moveSquare = false;
-    }
-
-    public int getColumn() {
-        return column;
-    }
-
-    public void setColumn(int column) {
-        this.column = column;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public void setRow(int row) {
-        this.row = row;
-    }
-
-    public Color getSquareColor() {
-        return squareColor;
-    }
-
-    public void setSquareColor(Color squareColor) {
-        this.squareColor = squareColor;
-    }
-
-    public boolean isOccupiedSquare() {
-        return occupiedSquare;
-    }
-
-    public void setOccupiedSquare(boolean occupiedSquare) {
-        this.occupiedSquare = occupiedSquare;
-    }
-
-    public boolean isMoveSquare() {
-        return moveSquare;
-    }
-
-    public void setMoveSquare(boolean moveSquare) {
-        this.moveSquare = moveSquare;
-    }
-
-    public boolean isJumpSquare() {
-        return jumpSquare;
-    }
-
-    public void setJumpSquare(boolean jumpSquare) {
-        this.jumpSquare = jumpSquare;
     }
 
     public static Color getLightColor() {
@@ -147,5 +100,53 @@ public class Square implements Serializable {
 
     public static Logger getLOGGER() {
         return LOGGER;
+    }
+
+    public int getColumn() {
+        return column;
+    }
+
+    public void setColumn(int column) {
+        this.column = column;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
+    }
+
+    public Color getSquareColor() {
+        return squareColor;
+    }
+
+    public void setSquareColor(Color squareColor) {
+        this.squareColor = squareColor;
+    }
+
+    public boolean isOccupiedSquare() {
+        return occupiedSquare;
+    }
+
+    public void setOccupiedSquare(boolean occupiedSquare) {
+        this.occupiedSquare = occupiedSquare;
+    }
+
+    public boolean isMoveSquare() {
+        return moveSquare;
+    }
+
+    public void setMoveSquare(boolean moveSquare) {
+        this.moveSquare = moveSquare;
+    }
+
+    public boolean isJumpSquare() {
+        return jumpSquare;
+    }
+
+    public void setJumpSquare(boolean jumpSquare) {
+        this.jumpSquare = jumpSquare;
     }
 }

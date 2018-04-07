@@ -13,18 +13,16 @@ public class Score {
         this.date = date;
     }
 
-
-    public Object getColumnValue(int columnIndex) throws IllegalAccessException {
-        return getClass().getDeclaredFields()[columnIndex].get(this);
-    }
-
-
     public static int getFieldsCount() {
         return Score.class.getDeclaredFields().length;
     }
 
     public static String getColumnName(int columnIndex) {
         return Score.class.getDeclaredFields()[columnIndex].getName();
+    }
+
+    public Object getColumnValue(int columnIndex) throws IllegalAccessException {
+        return getClass().getDeclaredFields()[columnIndex].get(this);
     }
 
     public Player getPlayer1() {

@@ -20,6 +20,14 @@ public class SaveAction extends AbstractAction implements ChangeLanguageListener
         ChangeLanguageAction.addChangeLanguageListener(this);
     }
 
+    public static CheckersGame getCheckersGame() {
+        return checkersGame;
+    }
+
+    public static void setCheckersGame(CheckersGame checkersGame) {
+        SaveAction.checkersGame = checkersGame;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         saveGame();
@@ -32,10 +40,6 @@ public class SaveAction extends AbstractAction implements ChangeLanguageListener
             ResourceBundle rb = event.getRb();
             putValue(Action.NAME, rb.getString("save"));
         });
-    }
-
-    public static void setCheckersGame(CheckersGame checkersGame) {
-        SaveAction.checkersGame = checkersGame;
     }
 
     public void saveGame() {
@@ -72,10 +76,6 @@ public class SaveAction extends AbstractAction implements ChangeLanguageListener
         } catch (IOException i) {
             i.printStackTrace();
         }
-    }
-
-    public static CheckersGame getCheckersGame() {
-        return checkersGame;
     }
 }
 

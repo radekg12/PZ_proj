@@ -28,6 +28,8 @@ import java.util.logging.Logger;
 
 public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListener, ReplayListener {
     private static final Logger LOGGER = Logger.getLogger(PlayerPanel.class.getSimpleName(), "LogsMessages");
+    private static ArrayList<EndOfTimeListener> endOfTimeListeners = new ArrayList<>();
+    private final int time;
     private Player player;
     private boolean active;
     private Color color, activeColor, foreground, foreground2;
@@ -36,9 +38,7 @@ public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListen
     private BufferedImage medal;
     private ImageIcon hourglass, timeEnd;
     private Timer timer;
-    private final int time;
     private int tmpTime;
-    private static ArrayList<EndOfTimeListener> endOfTimeListeners = new ArrayList<>();
 
     public PlayerPanel(MainFrame frame, Player player, CheckersGame checkersGame, int time) {
         loadProperties();
@@ -82,6 +82,14 @@ public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListen
         initGUI();
     }
 
+    public static synchronized void addEndOfTimeListener(EndOfTimeListener l) {
+        endOfTimeListeners.add(l);
+    }
+
+    public static synchronized void removeEndOfTimeListener(EndOfTimeListener l) {
+        endOfTimeListeners.remove(l);
+    }
+
     private void initGUI() {
         SwingUtilities.invokeLater(() -> {
             setLayout(new BorderLayout());
@@ -123,7 +131,6 @@ public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListen
         revalidate();
     }
 
-
     @Override
     public void win(WinEvent event) {
         timer.stop();
@@ -157,14 +164,6 @@ public class PlayerPanel extends JPanel implements ChangeTurnListener, WinListen
                 }
             }
         }
-    }
-
-    public static synchronized void addEndOfTimeListener(EndOfTimeListener l) {
-        endOfTimeListeners.add(l);
-    }
-
-    public static synchronized void removeEndOfTimeListener(EndOfTimeListener l) {
-        endOfTimeListeners.remove(l);
     }
 
     private synchronized void fireEndOfTimeEvent() {

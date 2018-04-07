@@ -51,6 +51,10 @@ public class GamePanel extends JPanel implements WinListener, ChangeLanguageList
 
     }
 
+    public static Logger getLOGGER() {
+        return LOGGER;
+    }
+
     public void initGUI() {
         SwingUtilities.invokeLater(() -> {
             GridBagConstraints c = new GridBagConstraints();
@@ -119,15 +123,10 @@ public class GamePanel extends JPanel implements WinListener, ChangeLanguageList
         }.execute();
     }
 
-
     @Override
     public void changeLocal(ChangeLanguageEvent event) {
         ResourceBundle rb = event.getRb();
         message = rb.getString("dialogMessage");
-    }
-
-    public static Logger getLOGGER() {
-        return LOGGER;
     }
 
     public CheckersGame getCheckersGame() {

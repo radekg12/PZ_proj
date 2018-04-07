@@ -37,7 +37,7 @@ public class ExchangeRatePanel extends JComponent implements ChangeLanguageListe
                 WebClient client = new WebClient();
                 WebApiResponse xxx;
                 try {
-                    xxx = client.getResponse(base);
+                    xxx = client.getResponse();
                     Method method = xxx.getRates().getClass().getMethod("get" + res);
                     rateLabel.setText("1 " + base + " = " + method.invoke(xxx.getRates()) + " " + res);
                     dateLabel.setText(xxx.getDate());
