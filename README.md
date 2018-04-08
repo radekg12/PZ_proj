@@ -15,4 +15,4 @@ More details [here](/Wymagania_projektu.md).
 
 
 ## Screenshots
-![screen4](/screenshots/screen4.PNG)
+![screen4](/screenshots/screen4.png)
