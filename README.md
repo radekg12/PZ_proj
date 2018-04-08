@@ -11,4 +11,8 @@ A basic Java application - Checkers Game, made as a university project.
 * IntelliJ IDEA
   
   
-More details [here](https://github.com/radekg12/PZ_proj/blob/master/Wymagania_projektu.md).
+More details [here](/Wymagania_projektu.md).
+
+
+## Screenshots
+![screen4](/screenshots/screen4.PNG)
